@@ -1,1 +1,1 @@
-# IntralismManiaConverter
+The Converter part for Intralism Toolbox
