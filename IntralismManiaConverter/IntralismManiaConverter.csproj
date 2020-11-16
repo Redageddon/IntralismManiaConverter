@@ -1,8 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>Lib</OutputType>
+        <OutputType>library</OutputType>
         <TargetFramework>net5</TargetFramework>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Title>IntralismManiaConverter</Title>
+        <Authors>Redageddon</Authors>
+        <PackageProjectUrl>https://github.com/rubiksmaster02/IntralismManiaConverter</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/rubiksmaster02/IntralismManiaConverter</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
