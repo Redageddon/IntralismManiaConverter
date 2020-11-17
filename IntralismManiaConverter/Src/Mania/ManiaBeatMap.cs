@@ -85,7 +85,7 @@
                 Creator = "IntralismToolCollection",
                 Version = "IntralismConvert",
                 Source = "Intralism",
-                Tags = new string[0],
+                Tags = Array.Empty<string>(),
                 BeatmapID = 0,
                 BeatmapSetID = 0,
             };

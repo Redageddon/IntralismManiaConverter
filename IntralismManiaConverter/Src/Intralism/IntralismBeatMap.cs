@@ -45,9 +45,7 @@
             this.MusicTime = data.MusicTime;
             this.IconFile = data.IconFile;
             this.EnvironmentType = data.EnvironmentType;
-            this.Hidden = data.Hidden;
             this.Events = data.Events;
-            this.E = data.E;
             this.Path = path;
         }
 
@@ -62,10 +60,20 @@
             this.Name = metaData.ArtistUnicode + " - " + metaData.TitleUnicode;
             this.MusicTime = GetMusicTime(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(maniaBeatMap.Path) !, maniaBeatMap.GeneralSection.AudioFilename!));
             this.IconFile = maniaBeatMap.EventsSection.BackgroundImage;
-            this.Events = GetEvents(maniaBeatMap.HitObjects);
+            this.Events = GetHitObjectEvents(maniaBeatMap.HitObjects).Concat(GetOtherEvents());
 
             this.Info =
                 $"Mania convert https://osu.ppy.sh/beatmapsets/{metaData.BeatmapSetID}/discussion/{metaData.BeatmapID} by {metaData.Creator}";
+
+            this.LevelResources = new List<LevelResource>
+            {
+                new LevelResource
+                {
+                     Name = "Background",
+                     Path = this.IconFile,
+                     Type = "Sprite",
+                },
+            };
         }
 
         /// <summary>
@@ -90,25 +98,13 @@
         ///     Gets or sets the beatmap level resources.
         /// </summary>
         [JsonPropertyName("levelResources")]
-        public LevelResource[] LevelResources { get; set; } = Array.Empty<LevelResource>();
-
-        /// <summary>
-        ///     Gets or sets the beatmap tags..
-        /// </summary>
-        [JsonPropertyName("tags")]
-        public IEnumerable<string> Tags { get; set; } = Array.Empty<string>();
+        public IEnumerable<LevelResource> LevelResources { get; set; } = Array.Empty<LevelResource>();
 
         /// <summary>
         ///     Gets or sets the hand count.
         /// </summary>
         [JsonPropertyName("handCount")]
         public int HandCount { get; set; } = 1;
-
-        /// <summary>
-        ///     Gets or sets a more info link.
-        /// </summary>
-        [JsonPropertyName("moreInfoURL")]
-        public string MoreInfoUrl { get; set; } = string.Empty;
 
         /// <summary>
         ///     Gets or sets the speed of the beatmap.
@@ -153,34 +149,10 @@
         public int EnvironmentType { get; set; }
 
         /// <summary>
-        ///     Gets or sets the conditions to unlock the beatmap.
-        /// </summary>
-        [JsonPropertyName("unlockConditions")]
-        public IEnumerable<object> UnlockConditions { get; set; } = Array.Empty<object>();
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether the beat map is hidden or not.
-        /// </summary>
-        [JsonPropertyName("hidden")]
-        public bool Hidden { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the checkpoints of the map.
-        /// </summary>
-        [JsonPropertyName("checkpoints")]
-        public IEnumerable<object> Checkpoints { get; set; } = Array.Empty<object>();
-
-        /// <summary>
         ///     Gets or sets all of the beatmap events.
         /// </summary>
         [JsonPropertyName("events")]
         public IEnumerable<Event> Events { get; set; } = Array.Empty<Event>();
-
-        /// <summary>
-        ///     Gets or sets E.
-        /// </summary>
-        [JsonPropertyName("e")]
-        public string E { get; set; } = string.Empty;
 
         /// <inheritdoc/>
         [Newtonsoft.Json.JsonIgnore]
@@ -212,7 +184,7 @@
         /// </summary>
         /// <returns> A collection of Spawn Objects. </returns>
         public IEnumerable<Event> GetSpawnObjects() =>
-            this.Events?.Where(e => e.Data[0] == "SpawnObj");
+            this.Events?.Where(e => e.Data[0] == EventType.SpawnObj.ToString());
 
         private static double GetMusicTime(string audioPath)
         {
@@ -220,7 +192,7 @@
             return reader.TotalTime.TotalSeconds;
         }
 
-        private static IEnumerable<Event> GetEvents(IEnumerable<HitObject> hitObjects) =>
+        private static IEnumerable<Event> GetHitObjectEvents(IEnumerable<HitObject> hitObjects) =>
             hitObjects?.Where(h => Enum.IsDefined(typeof(Position), (int)h.Position.X))
                       .GroupBy(
                           s => s.StartTime,
@@ -228,11 +200,16 @@
                               new Event
                               {
                                   Time = TimeSpan.FromMilliseconds(i).TotalSeconds,
-                                  Data = new List<string>
-                                  {
-                                      "SpawnObj",
-                                      $"[{string.Join('-', objects?.Select(e => (Position)(int)e.Position.X) !)}],0",
-                                  },
+                                  Data = Event.GetDataStrings(EventType.SpawnObj, $"[{string.Join('-', objects?.Select(e => (Position)(int)e.Position.X) !)}]"),
                               });
+
+        private IEnumerable<Event> GetOtherEvents()
+        {
+            yield return new Event
+            {
+                Time = 0,
+                Data = Event.GetDataStrings(EventType.ShowSprite, "Background,0,False,0,0,0"),
+            };
+        }
     }
 }
