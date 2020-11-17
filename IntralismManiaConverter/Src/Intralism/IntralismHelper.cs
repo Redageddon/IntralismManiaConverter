@@ -31,38 +31,41 @@ namespace IntralismManiaConverter.Intralism
         }
 
         /// <summary>
-        ///     Gets the info for intralism.
-        /// </summary>
-        /// <returns> A string of info. </returns>
-        public string GetInfo()
-        {
-            BeatmapMetadataSection metaData = this.maniaBeatMap.MetadataSection;
-            return $"Mania convert https://osu.ppy.sh/beatmapsets/{metaData.BeatmapSetID}/discussion/{metaData.BeatmapID} by {metaData.Creator}";
-        }
-
-        /// <summary>
         ///     Gets the name of this beatmap.
         /// </summary>
-        /// <returns> A string with the artist and title. </returns>
-        public string GetName() =>
-            this.maniaBeatMap.MetadataSection.ArtistUnicode + " - " + this.maniaBeatMap.MetadataSection.TitleUnicode;
+        public string Name => this.maniaBeatMap.MetadataSection.ArtistUnicode + " - " + this.maniaBeatMap.MetadataSection.TitleUnicode;
 
         /// <summary>
-        ///     Gets the first storyboard background.
+        ///     Gets the info for intralism.
         /// </summary>
-        /// <returns> A path to the first background image. </returns>
-        public string GetIconFile() =>
-            this.events[0].Data[1];
+        public string Info => $"Mania convert https://osu.ppy.sh/beatmapsets/{this.maniaBeatMap.MetadataSection.BeatmapSetID}/discussion/{this.maniaBeatMap.MetadataSection.BeatmapID} by {this.maniaBeatMap.MetadataSection.Creator}";
 
         /// <summary>
         ///     Gets the total length of a song in seconds.
         /// </summary>
-        /// <returns> Time in seconds. </returns>
-        public double GetMusicTime()
-        {
-            Mp3FileReader reader = new (Path.Combine(Path.GetDirectoryName(this.maniaBeatMap.Path)!, this.maniaBeatMap.GeneralSection.AudioFilename!));
+        public double MusicTime => new Mp3FileReader(Path.Combine(Path.GetDirectoryName(this.maniaBeatMap.Path)!, this.maniaBeatMap.GeneralSection.AudioFilename!)).TotalTime.TotalSeconds;
 
-            return reader.TotalTime.TotalSeconds;
+        /// <summary>
+        ///     Gets the first storyboard background.
+        /// </summary>
+        public string IconFile => this.events[0].Data[1];
+
+        /// <summary>
+        ///     Gets every resource for intralism.
+        /// </summary>
+        /// <returns> A collection of resources. </returns>
+        public IEnumerable<LevelResource> GetLevelResources() =>
+            this.GetStoryboardPaths()?.Select(path => new LevelResource(Path.GetFileName(path)));
+
+        /// <summary>
+        ///     Gets every event for intralism.
+        /// </summary>
+        /// <returns> A collection of events. </returns>
+        public IEnumerable<Event> GetAllEvents()
+        {
+            IEnumerable<Event> hitObjectEvents = GetHitObjectEvents(this.maniaBeatMap.HitObjects);
+
+            return this.events?.Concat(hitObjectEvents!);
         }
 
         /// <summary>
@@ -78,24 +81,6 @@ namespace IntralismManiaConverter.Intralism
                 yield return storyboardObject.FilePath;
             }
         }
-
-        /// <summary>
-        ///     Gets every event for intralism.
-        /// </summary>
-        /// <returns> A collection of events. </returns>
-        public IEnumerable<Event> GetAllEvents()
-        {
-            IEnumerable<Event> hitObjectEvents = GetHitObjectEvents(this.maniaBeatMap.HitObjects);
-
-            return this.events?.Concat(hitObjectEvents!);
-        }
-
-        /// <summary>
-        ///     Gets every resource for intralism.
-        /// </summary>
-        /// <returns> A collection of resources. </returns>
-        public IEnumerable<LevelResource> GetLevelResources() =>
-            this.GetStoryboardPaths()?.Select(path => new LevelResource(Path.GetFileName(path)));
 
         private static IEnumerable<Event> GetHitObjectEvents(IEnumerable<HitObject> hitObjects) =>
             hitObjects?.Where(h => Enum.IsDefined(typeof(Position), (int)h.Position.X))

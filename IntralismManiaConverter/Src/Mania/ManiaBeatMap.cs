@@ -50,9 +50,9 @@
 
             this.GeneralSection = new ()
             {
-                AudioFilename = this.Helper.GetAudioFilename(),
+                AudioFilename = this.Helper.AudioFilename,
                 AudioLeadIn = 0,
-                PreviewTime = this.Helper.GetPreviewTime(),
+                PreviewTime = this.Helper.PreviewTime,
                 Countdown = false,
                 SampleSet = SampleSet.Normal,
                 StackLeniency = 0.7,
@@ -72,10 +72,10 @@
 
             this.MetadataSection = new ()
             {
-                Title = this.Helper.GetTitle(),
-                TitleUnicode = this.Helper.GetTitle(),
-                Artist = this.Helper.GetArtist(),
-                ArtistUnicode = this.Helper.GetArtist(),
+                Title = this.Helper.Title,
+                TitleUnicode = this.Helper.Title,
+                Artist = this.Helper.Artist,
+                ArtistUnicode = this.Helper.Artist,
                 Creator = "IntralismToolCollection",
                 Version = "IntralismConvert",
                 Source = "Intralism",
@@ -96,7 +96,7 @@
 
             this.EventsSection = new ()
             {
-                BackgroundImage = this.Helper.GetBackgroundImage(),
+                BackgroundImage = this.Helper.BackgroundImage,
                 Storyboard = new (),
             };
 
@@ -115,7 +115,7 @@
                 },
             };
 
-            this.HitObjects.AddRange(ManiaHelper.GetManiaHitObjects(this.Helper.GetSpawnObjects())!);
+            this.HitObjects.AddRange(ManiaHelper.GetManiaHitObjects(this.Helper.SpawnObjects)!);
         }
 
         /// <summary>

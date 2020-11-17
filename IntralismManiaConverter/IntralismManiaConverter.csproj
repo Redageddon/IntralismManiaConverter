@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
+        <OutputType>Library</OutputType>
         <TargetFramework>net5.0</TargetFramework>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Title>IntralismManiaConverter</Title>
@@ -10,7 +10,7 @@
         <RepositoryUrl>https://github.com/rubiksmaster02/IntralismManiaConverter</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <NoWarn>SA1633, SA1129, SA1106, SA1107, SA1009</NoWarn>
-        <PackageVersion>1.0.1</PackageVersion>
+        <PackageVersion>1.1.1</PackageVersion>
         <Description>A tool that can convert mania maps to intralist and intralism maps to mania.</Description>
     </PropertyGroup>
 

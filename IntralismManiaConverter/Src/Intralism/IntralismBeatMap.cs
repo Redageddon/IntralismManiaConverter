@@ -52,12 +52,12 @@
         {
             this.Helper = new (maniaBeatMap);
 
-            this.Name = this.Helper.GetName();
-            this.MusicTime = this.Helper.GetMusicTime();
-            this.IconFile = this.Helper.GetIconFile();
-            this.Events = this.Helper.GetAllEvents();
-            this.Info = this.Helper.GetInfo();
+            this.Name = this.Helper.Name;
+            this.Info = this.Helper.Info;
             this.LevelResources = this.Helper.GetLevelResources();
+            this.MusicTime = this.Helper.MusicTime;
+            this.IconFile = this.Helper.IconFile;
+            this.Events = this.Helper.GetAllEvents();
         }
 
         /// <summary>
