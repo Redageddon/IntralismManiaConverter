@@ -3,15 +3,10 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
+    using System.Text.Json;
     using System.Text.Json.Serialization;
-    using IntralismManiaConverter.Enums;
     using IntralismManiaConverter.Interface;
     using IntralismManiaConverter.Mania;
-    using NAudio.Wave;
-    using Newtonsoft.Json;
-    using OsuParsers.Beatmaps.Objects;
-    using OsuParsers.Beatmaps.Sections;
 
     /// <summary>
     ///     The class representing intralism data.
@@ -33,7 +28,7 @@
         /// <param name="path"> The path being loaded from. </param>
         public IntralismBeatMap(string path)
         {
-            IntralismBeatMap data = JsonConvert.DeserializeObject<IntralismBeatMap>(File.ReadAllText(path!));
+            IntralismBeatMap data = JsonSerializer.Deserialize<IntralismBeatMap>(File.ReadAllText(path!));
             this.ConfigVersion = data.ConfigVersion;
             this.Name = data.Name;
             this.LevelResources = data.LevelResources;
@@ -55,26 +50,20 @@
         /// <param name="maniaBeatMap"> Creates a <see cref="IntralismBeatMap"/> from a <see cref="ManiaBeatMap"/>. </param>
         public IntralismBeatMap(ManiaBeatMap maniaBeatMap)
         {
-            BeatmapMetadataSection metaData = maniaBeatMap.MetadataSection;
+            this.Helper = new (maniaBeatMap);
 
-            this.Name = metaData.ArtistUnicode + " - " + metaData.TitleUnicode;
-            this.MusicTime = GetMusicTime(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(maniaBeatMap.Path) !, maniaBeatMap.GeneralSection.AudioFilename!));
-            this.IconFile = maniaBeatMap.EventsSection.BackgroundImage;
-            this.Events = GetHitObjectEvents(maniaBeatMap.HitObjects).Concat(GetOtherEvents());
-
-            this.Info =
-                $"Mania convert https://osu.ppy.sh/beatmapsets/{metaData.BeatmapSetID}/discussion/{metaData.BeatmapID} by {metaData.Creator}";
-
-            this.LevelResources = new List<LevelResource>
-            {
-                new LevelResource
-                {
-                     Name = "Background",
-                     Path = this.IconFile,
-                     Type = "Sprite",
-                },
-            };
+            this.Name = this.Helper.GetName();
+            this.MusicTime = this.Helper.GetMusicTime();
+            this.IconFile = this.Helper.GetIconFile();
+            this.Events = this.Helper.GetAllEvents();
+            this.Info = this.Helper.GetInfo();
+            this.LevelResources = this.Helper.GetLevelResources();
         }
+
+        /// <summary>
+        ///     Gets the intralism file helper class.
+        /// </summary>
+        public IntralismHelper Helper { get; }
 
         /// <summary>
         ///     Gets or sets the config version.
@@ -155,61 +144,11 @@
         public IEnumerable<Event> Events { get; set; } = Array.Empty<Event>();
 
         /// <inheritdoc/>
-        [Newtonsoft.Json.JsonIgnore]
+        [JsonIgnore]
         public string Path { get; set; } = string.Empty;
 
         /// <inheritdoc/>
         public void SaveToFile(string outputPath) =>
-            File.WriteAllText(outputPath!, JsonConvert.SerializeObject(this, Formatting.Indented));
-
-        /// <summary>
-        ///     Gets the name of the artist and defaults to "Intralism" if one isn't found.
-        /// </summary>
-        /// <returns> The artists name. </returns>
-        public string GetArtist()
-        {
-            string output = "Intralism";
-            string[] names = this.Name.Split('-');
-
-            if (names.Length > 1)
-            {
-                output = names[0];
-            }
-
-            return output;
-        }
-
-        /// <summary>
-        ///     Gets all events of type "SpawnObj".
-        /// </summary>
-        /// <returns> A collection of Spawn Objects. </returns>
-        public IEnumerable<Event> GetSpawnObjects() =>
-            this.Events?.Where(e => e.Data[0] == EventType.SpawnObj.ToString());
-
-        private static double GetMusicTime(string audioPath)
-        {
-            Mp3FileReader reader = new Mp3FileReader(audioPath);
-            return reader.TotalTime.TotalSeconds;
-        }
-
-        private static IEnumerable<Event> GetHitObjectEvents(IEnumerable<HitObject> hitObjects) =>
-            hitObjects?.Where(h => Enum.IsDefined(typeof(Position), (int)h.Position.X))
-                      .GroupBy(
-                          s => s.StartTime,
-                          (i, objects) =>
-                              new Event
-                              {
-                                  Time = TimeSpan.FromMilliseconds(i).TotalSeconds,
-                                  Data = Event.GetDataStrings(EventType.SpawnObj, $"[{string.Join('-', objects?.Select(e => (Position)(int)e.Position.X) !)}]"),
-                              });
-
-        private IEnumerable<Event> GetOtherEvents()
-        {
-            yield return new Event
-            {
-                Time = 0,
-                Data = Event.GetDataStrings(EventType.ShowSprite, "Background,0,False,0,0,0"),
-            };
-        }
+            File.WriteAllText(outputPath!, JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
     }
 }

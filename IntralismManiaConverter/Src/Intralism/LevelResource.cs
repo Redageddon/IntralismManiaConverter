@@ -10,6 +10,25 @@
     public class LevelResource
     {
         /// <summary>
+        ///     Initializes a new instance of the <see cref="LevelResource"/> class.
+        ///     An empty ctor allowing for serialization.
+        /// </summary>
+        public LevelResource()
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="LevelResource"/> class.
+        /// </summary>
+        /// <param name="path"> The path/name to the resource. </param>
+        public LevelResource(string path)
+        {
+            this.Name = path;
+            this.Path = path;
+            this.Type = "Sprite";
+        }
+
+        /// <summary>
         ///     Gets or sets the name of the resource.
         /// </summary>
         [JsonPropertyName("name")]

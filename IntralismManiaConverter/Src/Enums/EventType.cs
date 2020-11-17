@@ -1,5 +1,10 @@
+#pragma warning disable CS1591
+#pragma warning disable SA1602
 namespace IntralismManiaConverter.Enums
 {
+    /// <summary>
+    ///     The enum responsible for all intralism event types.
+    /// </summary>
     public enum EventType
     {
         SpawnObj,
@@ -8,7 +13,7 @@ namespace IntralismManiaConverter.Enums
         SetPlayerDistance,
         ShowSprite,
         ShowTitle,
-        SetBGColor,
+        SetBgColor,
         SetTrailZoomSpeed,
         AddEnvironmentObject,
         RemoveEnvironmentObject,

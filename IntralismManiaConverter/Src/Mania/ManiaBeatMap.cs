@@ -1,19 +1,12 @@
 ﻿namespace IntralismManiaConverter.Mania
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Numerics;
-    using IntralismManiaConverter.Enums;
     using IntralismManiaConverter.Interface;
     using IntralismManiaConverter.Intralism;
     using OsuParsers.Beatmaps;
-    using OsuParsers.Beatmaps.Objects;
-    using OsuParsers.Beatmaps.Sections;
     using OsuParsers.Decoders;
     using OsuParsers.Enums;
     using OsuParsers.Enums.Beatmaps;
-    using OsuParsers.Storyboards;
 
     /// <summary>
     ///     The class representing mania data.
@@ -52,13 +45,14 @@
         /// <param name="intralismBeatMap"> Creates a <see cref="ManiaBeatMap"/> from an <see cref="IntralismBeatMap"/>. </param>
         public ManiaBeatMap(IntralismBeatMap intralismBeatMap)
         {
+            this.Helper = new ManiaHelper(intralismBeatMap);
             this.Version = 14;
 
-            this.GeneralSection = new BeatmapGeneralSection
+            this.GeneralSection = new ()
             {
-                AudioFilename = intralismBeatMap.MusicFile,
+                AudioFilename = this.Helper.GetAudioFilename(),
                 AudioLeadIn = 0,
-                PreviewTime = (int)TimeSpan.FromSeconds(intralismBeatMap.MusicTime).TotalMilliseconds / 2,
+                PreviewTime = this.Helper.GetPreviewTime(),
                 Countdown = false,
                 SampleSet = SampleSet.Normal,
                 StackLeniency = 0.7,
@@ -68,7 +62,7 @@
                 WidescreenStoryboard = false,
             };
 
-            this.EditorSection = new BeatmapEditorSection
+            this.EditorSection = new ()
             {
                 DistanceSpacing = 1,
                 BeatDivisor = 4,
@@ -76,12 +70,12 @@
                 TimelineZoom = 2.4f,
             };
 
-            this.MetadataSection = new BeatmapMetadataSection
+            this.MetadataSection = new ()
             {
-                Title = intralismBeatMap.Name,
-                TitleUnicode = intralismBeatMap.Name,
-                Artist = intralismBeatMap.GetArtist(),
-                ArtistUnicode = intralismBeatMap.GetArtist(),
+                Title = this.Helper.GetTitle(),
+                TitleUnicode = this.Helper.GetTitle(),
+                Artist = this.Helper.GetArtist(),
+                ArtistUnicode = this.Helper.GetArtist(),
                 Creator = "IntralismToolCollection",
                 Version = "IntralismConvert",
                 Source = "Intralism",
@@ -90,7 +84,7 @@
                 BeatmapSetID = 0,
             };
 
-            this.DifficultySection = new BeatmapDifficultySection
+            this.DifficultySection = new ()
             {
                 HPDrainRate = 5,
                 CircleSize = 4,
@@ -100,15 +94,15 @@
                 SliderTickRate = 1,
             };
 
-            this.EventsSection = new BeatmapEventsSection
+            this.EventsSection = new ()
             {
-                BackgroundImage = intralismBeatMap.IconFile,
-                Storyboard = new Storyboard(),
+                BackgroundImage = this.Helper.GetBackgroundImage(),
+                Storyboard = new (),
             };
 
-            this.TimingPoints = new List<TimingPoint>
+            this.TimingPoints = new ()
             {
-                new TimingPoint
+                new ()
                 {
                     Offset = 0,
                     BeatLength = 500,
@@ -121,8 +115,13 @@
                 },
             };
 
-            this.HitObjects.AddRange(GetManiaHitObjects(intralismBeatMap.GetSpawnObjects()) !);
+            this.HitObjects.AddRange(ManiaHelper.GetManiaHitObjects(this.Helper.GetSpawnObjects())!);
         }
+
+        /// <summary>
+        ///     Gets the helper class for mania.
+        /// </summary>
+        public ManiaHelper Helper { get; }
 
         /// <inheritdoc/>
         public string Path { get; set; } = string.Empty;
@@ -130,20 +129,5 @@
         /// <inheritdoc/>
         public void SaveToFile(string outputPath) =>
             this.Write(outputPath);
-
-        private static IEnumerable<HitObject> GetManiaHitObjects(IEnumerable<Event> spawnObjects) =>
-            spawnObjects?.SelectMany(e => IntralismToManiaNote(e.Data[1], (int)TimeSpan.FromSeconds(e.Time).TotalMilliseconds));
-
-        private static IEnumerable<HitCircle> IntralismToManiaNote(string data, int timing)
-        {
-            string rawData = data.Split(',')[0][1..^1];
-            string[] notes = rawData.Split('-');
-            IEnumerable<Position> positions = notes.Select(e => (Position)Enum.Parse(typeof(Position), e));
-
-            return positions.Select(position => GetManiaHitObject(position, timing));
-        }
-
-        private static HitCircle GetManiaHitObject(Position position, int timing) =>
-            new HitCircle(new Vector2((int)position, 192), timing, 1, 0, new Extras(), false, 0);
     }
 }

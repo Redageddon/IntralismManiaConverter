@@ -1,6 +1,7 @@
 ﻿namespace IntralismManiaConverter
 {
     using System.IO;
+    using System.Threading.Tasks;
     using FFmpeg.NET;
 
     /// <summary>
@@ -19,7 +20,7 @@
             get => ffmpegPath;
             set
             {
-                ffmpeg = new Engine(value);
+                ffmpeg = new (value);
                 ffmpegPath = value;
             }
         }
@@ -29,15 +30,16 @@
         /// </summary>
         /// <param name="startPath"> The path where the audio is loaded. </param>
         /// <param name="endPath"> The path where the audio is saved. </param>
-        public static void SaveAudio(string startPath, string endPath)
+        /// <returns> A <see cref="Task"/> representing the asynchronous operation. </returns>
+        public static async Task AsyncSaveAudio(string startPath, string endPath)
         {
             if (Path.GetExtension(startPath) != ".ogg")
             {
                 endPath = Path.Combine(Path.GetDirectoryName(endPath) !, "music.ogg");
 
-                MediaFile unused = ffmpeg.ConvertAsync(
-                    new MediaFile(startPath),
-                    new MediaFile(endPath)).Result;
+                await ffmpeg.ConvertAsync(
+                    new (startPath),
+                    new (endPath));
             }
             else
             {
