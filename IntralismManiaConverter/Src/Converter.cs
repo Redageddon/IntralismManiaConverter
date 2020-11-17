@@ -1,10 +1,10 @@
-﻿using System.IO;
-using IntralismManiaConverter.Interface;
-using IntralismManiaConverter.Intralism;
-using IntralismManiaConverter.Mania;
-
-namespace IntralismManiaConverter
+﻿namespace IntralismManiaConverter
 {
+    using System.IO;
+    using IntralismManiaConverter.Interface;
+    using IntralismManiaConverter.Intralism;
+    using IntralismManiaConverter.Mania;
+
     /// <summary>
     ///     The class responsible for converting mania and intralism beatmaps back and fourth.
     /// </summary>
@@ -49,21 +49,21 @@ namespace IntralismManiaConverter
             string outputFileName = isMania
                 ? "config.osu"
                 : "config.txt";
-            string configEndPath = Path.Combine(outputFolder, outputFileName);
+            string configEndPath = Path.Combine(outputFolder!, outputFileName);
             savable.SaveToFile(configEndPath);
         }
 
         private static void SaveAudio(string rootPath, string outputFolder, string audioFileName)
         {
-            string startingAudioPath = Path.Combine(rootPath, audioFileName);
-            string endingAudioPath = Path.Combine(outputFolder, audioFileName);
+            string startingAudioPath = Path.Combine(rootPath!, audioFileName!);
+            string endingAudioPath = Path.Combine(outputFolder!, audioFileName);
             AudioFileHelper.SaveAudio(startingAudioPath, endingAudioPath);
         }
 
         private static void SaveBackground(string rootPath, string outputFolder, string backgroundFileName)
         {
-            string startingBackgroundPath = Path.Combine(rootPath, backgroundFileName);
-            string endingBackgroundPath = Path.Combine(outputFolder, backgroundFileName);
+            string startingBackgroundPath = Path.Combine(rootPath!, backgroundFileName!);
+            string endingBackgroundPath = Path.Combine(outputFolder!, backgroundFileName);
             File.Copy(startingBackgroundPath, endingBackgroundPath);
         }
     }

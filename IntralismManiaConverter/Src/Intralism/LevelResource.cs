@@ -1,8 +1,8 @@
-﻿using System;
-using System.Text.Json.Serialization;
-
-namespace IntralismManiaConverter.Intralism
+﻿namespace IntralismManiaConverter.Intralism
 {
+    using System;
+    using System.Text.Json.Serialization;
+
     /// <summary>
     ///     An intralism level resource.
     /// </summary>

@@ -1,19 +1,28 @@
-﻿using System.IO;
-using FFmpeg.NET;
-
-namespace IntralismManiaConverter
+﻿namespace IntralismManiaConverter
 {
+    using System.IO;
+    using FFmpeg.NET;
+
     /// <summary>
     ///     The class responsible for saving an audio file.
     /// </summary>
     public static class AudioFileHelper
     {
-        /// <summary>
-        ///     The path to the ffmeg installation, default is "ffmpeg.exe"
-        /// </summary>
-        public static string FfmpegPath { get; set; } = "ffmpeg.exe";
+        private static Engine ffmpeg = new Engine();
+        private static string ffmpegPath;
 
-        private static readonly Engine Ffmpeg = new Engine(FfmpegPath);
+        /// <summary>
+        ///     Gets or sets the path to the ffmeg installation, default is "ffmpeg.exe".
+        /// </summary>
+        public static string FfmpegPath
+        {
+            get => ffmpegPath;
+            set
+            {
+                ffmpeg = new Engine(value);
+                ffmpegPath = value;
+            }
+        }
 
         /// <summary>
         ///     Saves an audio file.
@@ -24,15 +33,15 @@ namespace IntralismManiaConverter
         {
             if (Path.GetExtension(startPath) != ".ogg")
             {
-                endPath = Path.Combine(Path.GetDirectoryName(endPath), "music.ogg");
+                endPath = Path.Combine(Path.GetDirectoryName(endPath) !, "music.ogg");
 
-                MediaFile mediaFile = Ffmpeg.ConvertAsync(
+                MediaFile unused = ffmpeg.ConvertAsync(
                     new MediaFile(startPath),
                     new MediaFile(endPath)).Result;
             }
             else
             {
-                File.Copy(startPath, endPath);
+                File.Copy(startPath!, endPath!);
             }
         }
     }

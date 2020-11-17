@@ -1,20 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using IntralismManiaConverter.Enums;
-using IntralismManiaConverter.Interface;
-using IntralismManiaConverter.Intralism;
-using OsuParsers.Beatmaps;
-using OsuParsers.Beatmaps.Objects;
-using OsuParsers.Beatmaps.Sections;
-using OsuParsers.Decoders;
-using OsuParsers.Enums;
-using OsuParsers.Enums.Beatmaps;
-using OsuParsers.Storyboards;
-
-namespace IntralismManiaConverter.Mania
+﻿namespace IntralismManiaConverter.Mania
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Numerics;
+    using IntralismManiaConverter.Enums;
+    using IntralismManiaConverter.Interface;
+    using IntralismManiaConverter.Intralism;
+    using OsuParsers.Beatmaps;
+    using OsuParsers.Beatmaps.Objects;
+    using OsuParsers.Beatmaps.Sections;
+    using OsuParsers.Decoders;
+    using OsuParsers.Enums;
+    using OsuParsers.Enums.Beatmaps;
+    using OsuParsers.Storyboards;
+
     /// <summary>
     ///     The class representing mania data.
     /// </summary>
@@ -121,7 +121,7 @@ namespace IntralismManiaConverter.Mania
                 },
             };
 
-            this.HitObjects = GetManiaHitObjects(intralismBeatMap.GetSpawnObjects()).ToList();
+            this.HitObjects.AddRange(GetManiaHitObjects(intralismBeatMap.GetSpawnObjects()) !);
         }
 
         /// <inheritdoc/>
@@ -131,17 +131,8 @@ namespace IntralismManiaConverter.Mania
         public void SaveToFile(string outputPath) =>
             this.Write(outputPath);
 
-        private static IEnumerable<HitObject> GetManiaHitObjects(IEnumerable<Event> spawnObjects)
-        {
-            List<HitCircle> hitObjects = new List<HitCircle>();
-
-            foreach (Event e in spawnObjects)
-            {
-                hitObjects.AddRange(IntralismToManiaNote(e.Data[1], (int)TimeSpan.FromSeconds(e.Time).TotalMilliseconds));
-            }
-
-            return hitObjects;
-        }
+        private static IEnumerable<HitObject> GetManiaHitObjects(IEnumerable<Event> spawnObjects) =>
+            spawnObjects?.SelectMany(e => IntralismToManiaNote(e.Data[1], (int)TimeSpan.FromSeconds(e.Time).TotalMilliseconds));
 
         private static IEnumerable<HitCircle> IntralismToManiaNote(string data, int timing)
         {

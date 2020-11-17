@@ -6,8 +6,13 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Title>IntralismManiaConverter</Title>
         <Authors>Redageddon</Authors>
-        <PackageProjectUrl>https://github.com/rubiksmaster02/IntralismManiaConverter</PackageProjectUrl>
+        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Documentation.xml</DocumentationFile>
+        <PackageProjectUrl></PackageProjectUrl>
         <RepositoryUrl>https://github.com/rubiksmaster02/IntralismManiaConverter</RepositoryUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <NoWarn>SA1633</NoWarn>
+        <PackageVersion>1.0.1</PackageVersion>
+        <Description>A tool that can convert mania maps to intralist and intralism maps to mania.</Description>
     </PropertyGroup>
 
     <ItemGroup>

@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.Json.Serialization;
-using IntralismManiaConverter.Enums;
-using IntralismManiaConverter.Interface;
-using IntralismManiaConverter.Mania;
-using NAudio.Wave;
-using Newtonsoft.Json;
-using OsuParsers.Beatmaps.Objects;
-using OsuParsers.Beatmaps.Sections;
-
-namespace IntralismManiaConverter.Intralism
+﻿namespace IntralismManiaConverter.Intralism
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Text.Json.Serialization;
+    using IntralismManiaConverter.Enums;
+    using IntralismManiaConverter.Interface;
+    using IntralismManiaConverter.Mania;
+    using NAudio.Wave;
+    using Newtonsoft.Json;
+    using OsuParsers.Beatmaps.Objects;
+    using OsuParsers.Beatmaps.Sections;
+
     /// <summary>
     ///     The class representing intralism data.
     /// </summary>
@@ -33,7 +33,7 @@ namespace IntralismManiaConverter.Intralism
         /// <param name="path"> The path being loaded from. </param>
         public IntralismBeatMap(string path)
         {
-            IntralismBeatMap data = JsonConvert.DeserializeObject<IntralismBeatMap>(File.ReadAllText(path));
+            IntralismBeatMap data = JsonConvert.DeserializeObject<IntralismBeatMap>(File.ReadAllText(path!));
             this.ConfigVersion = data.ConfigVersion;
             this.Name = data.Name;
             this.LevelResources = data.LevelResources;
@@ -60,7 +60,7 @@ namespace IntralismManiaConverter.Intralism
             BeatmapMetadataSection metaData = maniaBeatMap.MetadataSection;
 
             this.Name = metaData.ArtistUnicode + " - " + metaData.TitleUnicode;
-            this.MusicTime = GetMusicTime(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(maniaBeatMap.Path), maniaBeatMap.GeneralSection.AudioFilename));
+            this.MusicTime = GetMusicTime(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(maniaBeatMap.Path) !, maniaBeatMap.GeneralSection.AudioFilename!));
             this.IconFile = maniaBeatMap.EventsSection.BackgroundImage;
             this.Events = GetEvents(maniaBeatMap.HitObjects);
 
@@ -90,13 +90,13 @@ namespace IntralismManiaConverter.Intralism
         ///     Gets or sets the beatmap level resources.
         /// </summary>
         [JsonPropertyName("levelResources")]
-        public LevelResource[] LevelResources { get; set; } = new LevelResource[0];
+        public LevelResource[] LevelResources { get; set; } = Array.Empty<LevelResource>();
 
         /// <summary>
         ///     Gets or sets the beatmap tags..
         /// </summary>
         [JsonPropertyName("tags")]
-        public IEnumerable<string> Tags { get; set; } = new string[0];
+        public IEnumerable<string> Tags { get; set; } = Array.Empty<string>();
 
         /// <summary>
         ///     Gets or sets the hand count.
@@ -156,7 +156,7 @@ namespace IntralismManiaConverter.Intralism
         ///     Gets or sets the conditions to unlock the beatmap.
         /// </summary>
         [JsonPropertyName("unlockConditions")]
-        public IEnumerable<object> UnlockConditions { get; set; } = new object[0];
+        public IEnumerable<object> UnlockConditions { get; set; } = Array.Empty<object>();
 
         /// <summary>
         ///     Gets or sets a value indicating whether the beat map is hidden or not.
@@ -168,13 +168,13 @@ namespace IntralismManiaConverter.Intralism
         ///     Gets or sets the checkpoints of the map.
         /// </summary>
         [JsonPropertyName("checkpoints")]
-        public IEnumerable<object> Checkpoints { get; set; } = new object[0];
+        public IEnumerable<object> Checkpoints { get; set; } = Array.Empty<object>();
 
         /// <summary>
         ///     Gets or sets all of the beatmap events.
         /// </summary>
         [JsonPropertyName("events")]
-        public IEnumerable<Event> Events { get; set; } = new Event[0];
+        public IEnumerable<Event> Events { get; set; } = Array.Empty<Event>();
 
         /// <summary>
         ///     Gets or sets E.
@@ -188,7 +188,7 @@ namespace IntralismManiaConverter.Intralism
 
         /// <inheritdoc/>
         public void SaveToFile(string outputPath) =>
-            File.WriteAllText(outputPath, JsonConvert.SerializeObject(this, Formatting.Indented));
+            File.WriteAllText(outputPath!, JsonConvert.SerializeObject(this, Formatting.Indented));
 
         /// <summary>
         ///     Gets the name of the artist and defaults to "Intralism" if one isn't found.
@@ -212,7 +212,7 @@ namespace IntralismManiaConverter.Intralism
         /// </summary>
         /// <returns> A collection of Spawn Objects. </returns>
         public IEnumerable<Event> GetSpawnObjects() =>
-            this.Events.Where(e => e.Data[0] == "SpawnObj");
+            this.Events?.Where(e => e.Data[0] == "SpawnObj");
 
         private static double GetMusicTime(string audioPath)
         {
@@ -221,7 +221,7 @@ namespace IntralismManiaConverter.Intralism
         }
 
         private static IEnumerable<Event> GetEvents(IEnumerable<HitObject> hitObjects) =>
-            hitObjects.Where(h => Enum.IsDefined(typeof(Position), (int)h.Position.X))
+            hitObjects?.Where(h => Enum.IsDefined(typeof(Position), (int)h.Position.X))
                       .GroupBy(
                           s => s.StartTime,
                           (i, objects) =>
@@ -231,7 +231,7 @@ namespace IntralismManiaConverter.Intralism
                                   Data = new List<string>
                                   {
                                       "SpawnObj",
-                                      $"[{string.Join('-', objects.Select(e => (Position)(int)e.Position.X))}],0",
+                                      $"[{string.Join('-', objects?.Select(e => (Position)(int)e.Position.X) !)}],0",
                                   },
                               });
     }

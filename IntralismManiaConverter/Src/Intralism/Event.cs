@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-
-namespace IntralismManiaConverter.Intralism
+﻿namespace IntralismManiaConverter.Intralism
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Text.Json.Serialization;
+
     /// <summary>
     ///     An intralism event.
     /// </summary>
