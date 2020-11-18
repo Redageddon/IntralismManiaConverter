@@ -1,8 +1,8 @@
-﻿namespace IntralismManiaConverter.Intralism
-{
-    using System;
-    using System.Text.Json.Serialization;
+﻿using System;
+using System.Text.Json.Serialization;
 
+namespace IntralismManiaConverter.Intralism
+{
     /// <summary>
     ///     An intralism level resource.
     /// </summary>

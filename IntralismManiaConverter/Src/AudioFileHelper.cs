@@ -1,9 +1,9 @@
-﻿namespace IntralismManiaConverter
-{
-    using System.IO;
-    using System.Threading.Tasks;
-    using FFmpeg.NET;
+﻿using System.IO;
+using System.Threading.Tasks;
+using FFmpeg.NET;
 
+namespace IntralismManiaConverter
+{
     /// <summary>
     ///     The class responsible for saving an audio file.
     /// </summary>

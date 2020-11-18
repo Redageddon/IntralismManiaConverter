@@ -1,13 +1,13 @@
-﻿namespace IntralismManiaConverter.Mania
-{
-    using System;
-    using IntralismManiaConverter.Interface;
-    using IntralismManiaConverter.Intralism;
-    using OsuParsers.Beatmaps;
-    using OsuParsers.Decoders;
-    using OsuParsers.Enums;
-    using OsuParsers.Enums.Beatmaps;
+﻿using System;
+using IntralismManiaConverter.Interface;
+using IntralismManiaConverter.Intralism;
+using OsuParsers.Beatmaps;
+using OsuParsers.Decoders;
+using OsuParsers.Enums;
+using OsuParsers.Enums.Beatmaps;
 
+namespace IntralismManiaConverter.Mania
+{
     /// <summary>
     ///     The class representing mania data.
     /// </summary>

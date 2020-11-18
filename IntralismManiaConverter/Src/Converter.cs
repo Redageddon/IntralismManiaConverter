@@ -1,12 +1,12 @@
-﻿namespace IntralismManiaConverter
-{
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Threading.Tasks;
-    using IntralismManiaConverter.Interface;
-    using IntralismManiaConverter.Intralism;
-    using IntralismManiaConverter.Mania;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using IntralismManiaConverter.Interface;
+using IntralismManiaConverter.Intralism;
+using IntralismManiaConverter.Mania;
 
+namespace IntralismManiaConverter
+{
     /// <summary>
     ///     The class responsible for converting mania and intralism beatmaps back and fourth.
     /// </summary>

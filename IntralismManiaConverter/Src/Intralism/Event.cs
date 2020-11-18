@@ -1,13 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
+using IntralismManiaConverter.Enums;
 using OsuParsers.Beatmaps.Objects;
 
 namespace IntralismManiaConverter.Intralism
 {
-    using System;
-    using System.Text.Json.Serialization;
-    using IntralismManiaConverter.Enums;
-
     /// <summary>
     ///     An intralism event.
     /// </summary>

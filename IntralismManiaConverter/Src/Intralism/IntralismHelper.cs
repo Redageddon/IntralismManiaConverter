@@ -1,17 +1,16 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using IntralismManiaConverter.Enums;
+using IntralismManiaConverter.Mania;
+using MoreLinq;
+using NAudio.Wave;
+using OsuParsers.Beatmaps.Objects;
+using OsuParsers.Storyboards.Objects;
+
 namespace IntralismManiaConverter.Intralism
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using IntralismManiaConverter.Enums;
-    using IntralismManiaConverter.Mania;
-    using MoreLinq;
-    using NAudio.Wave;
-    using OsuParsers.Beatmaps.Objects;
-    using OsuParsers.Storyboards.Interfaces;
-    using OsuParsers.Storyboards.Objects;
-
     /// <summary>
     ///     A class that helps with getting data from a mania beatmap.
     /// </summary>

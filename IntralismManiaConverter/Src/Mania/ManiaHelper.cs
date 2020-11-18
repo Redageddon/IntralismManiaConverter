@@ -1,13 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+using IntralismManiaConverter.Enums;
+using IntralismManiaConverter.Intralism;
+using OsuParsers.Beatmaps.Objects;
+
 namespace IntralismManiaConverter.Mania
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Numerics;
-    using IntralismManiaConverter.Enums;
-    using IntralismManiaConverter.Intralism;
-    using OsuParsers.Beatmaps.Objects;
-
     /// <summary>
     ///     A class to help mania deserialization.
     /// </summary>

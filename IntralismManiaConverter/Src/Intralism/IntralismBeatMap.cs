@@ -1,13 +1,13 @@
-﻿namespace IntralismManiaConverter.Intralism
-{
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Text.Json;
-    using System.Text.Json.Serialization;
-    using IntralismManiaConverter.Interface;
-    using IntralismManiaConverter.Mania;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using IntralismManiaConverter.Interface;
+using IntralismManiaConverter.Mania;
 
+namespace IntralismManiaConverter.Intralism
+{
     /// <summary>
     ///     The class representing intralism data.
     /// </summary>
