@@ -6,9 +6,9 @@ namespace IntralismManiaConverter.Intralism
     using System.Linq;
     using IntralismManiaConverter.Enums;
     using IntralismManiaConverter.Mania;
+    using MoreLinq;
     using NAudio.Wave;
     using OsuParsers.Beatmaps.Objects;
-    using OsuParsers.Beatmaps.Sections;
     using OsuParsers.Storyboards.Interfaces;
     using OsuParsers.Storyboards.Objects;
 
@@ -76,22 +76,11 @@ namespace IntralismManiaConverter.Intralism
         {
             yield return this.maniaBeatMap.EventsSection.BackgroundImage;
 
-            foreach (IStoryboardObject storyboardObject in this.GetBackgroundStoryboards())
+            foreach (StoryboardSprite s in this.GetBackgroundStoryboards())
             {
-                yield return storyboardObject.FilePath;
+                yield return s.FilePath;
             }
         }
-
-        private static IEnumerable<Event> GetHitObjectEvents(IEnumerable<HitObject> hitObjects) =>
-            hitObjects?.Where(h => Enum.IsDefined(typeof(Position), (int)h.Position.X))
-                      .GroupBy(
-                          s => s.StartTime,
-                          (i, objects) =>
-                              new Event
-                              {
-                                  Time = TimeSpan.FromMilliseconds(i).TotalSeconds,
-                                  Data = Event.GetDataStrings(EventType.SpawnObj, $"[{string.Join('-', objects?.Select(e => (Position)(int)e.Position.X) !)}]"),
-                              });
 
         private void SetStoryboardEvents()
         {
@@ -100,14 +89,23 @@ namespace IntralismManiaConverter.Intralism
             this.events.AddRange(
                 this.GetBackgroundStoryboards()?.Select(
                     s => new Event(
-                        TimeSpan.FromMilliseconds(((StoryboardSprite)s).Commands.Commands[0].StartTime).TotalSeconds,
+                        TimeSpan.FromMilliseconds(s.Commands.Commands[0].StartTime).TotalSeconds,
                         Path.GetFileName(s.FilePath)))!);
         }
 
-        private IEnumerable<IStoryboardObject> GetBackgroundStoryboards() =>
-            this.maniaBeatMap.EventsSection
+        private static IEnumerable<Event> GetHitObjectEvents(IEnumerable<HitObject> hitObjects) =>
+            hitObjects?.Where(h => Enum.IsDefined(typeof(Position), (int)h.Position.X))
+                      .GroupBy(
+                          s => s.StartTime,
+                          (i, objects) =>
+                              new Event(TimeSpan.FromMilliseconds(i).TotalSeconds, objects));
+
+        private IEnumerable<StoryboardSprite> GetBackgroundStoryboards() =>
+            this.maniaBeatMap
+                .EventsSection
                 .Storyboard
                 .BackgroundLayer?
-                .GroupBy(e => e.FilePath, (_, f) => f?.First());
+                .DistinctBy(e => e.FilePath)?
+                .Select(e => e as StoryboardSprite);
     }
 }

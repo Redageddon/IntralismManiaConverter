@@ -1,4 +1,8 @@
-﻿namespace IntralismManiaConverter.Intralism
+﻿using System.Collections.Generic;
+using System.Linq;
+using OsuParsers.Beatmaps.Objects;
+
+namespace IntralismManiaConverter.Intralism
 {
     using System;
     using System.Text.Json.Serialization;
@@ -22,11 +26,22 @@
         ///     Initializes a new instance of the <see cref="Event"/> class.
         /// </summary>
         /// <param name="time"> The start time of this event. </param>
-        /// <param name="name"> the name benign used in an event data configuration. </param>
+        /// <param name="name"> the name being used in an event data configuration. </param>
         public Event(double time, string name)
         {
             this.Time = time;
             this.Data = GetDataStrings(EventType.ShowSprite, $"{name},0,False,0,0,0");
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Event"/> class.
+        /// </summary>
+        /// <param name="time"> The start time of this event. </param>
+        /// <param name="hitObjects"> A collection being used in an event data configuration. </param>
+        public Event(double time, IEnumerable<HitObject> hitObjects)
+        {
+            this.Time = time;
+            this.Data = GetDataStrings(EventType.SpawnObj, $"[{string.Join('-', hitObjects?.Select(e => (Position)(int)e.Position.X)!)}]");
         }
 
         /// <summary>

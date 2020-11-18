@@ -74,7 +74,7 @@
             {
                 string startingBackgroundPath = Path.Combine(rootPath!, backgroundFileName!);
                 string endingBackgroundPath = Path.Combine(outputFolder!, Path.GetFileName(backgroundFileName));
-                File.Copy(startingBackgroundPath, endingBackgroundPath);
+                File.Copy(startingBackgroundPath, endingBackgroundPath, true);
             }
         }
     }

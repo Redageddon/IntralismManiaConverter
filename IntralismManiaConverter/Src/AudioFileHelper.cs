@@ -43,7 +43,7 @@
             }
             else
             {
-                File.Copy(startPath!, endPath!);
+                File.Copy(startPath!, endPath!, true);
             }
         }
     }
