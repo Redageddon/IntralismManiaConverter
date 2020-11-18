@@ -10,7 +10,7 @@
         <RepositoryUrl>https://github.com/rubiksmaster02/IntralismManiaConverter</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <NoWarn>SA1633, SA1129, SA1106, SA1107, SA1009, SA1200</NoWarn>
-        <PackageVersion>1.1.1</PackageVersion>
+        <PackageVersion>1.1.2</PackageVersion>
         <Description>A tool that can convert mania maps to intralist and intralism maps to mania.</Description>
     </PropertyGroup>
 

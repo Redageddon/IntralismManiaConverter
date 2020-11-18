@@ -63,6 +63,7 @@ namespace IntralismManiaConverter.Intralism
         /// <summary>
         ///     Gets the intralism file helper class.
         /// </summary>
+        [JsonIgnore]
         public IntralismHelper Helper { get; }
 
         /// <summary>

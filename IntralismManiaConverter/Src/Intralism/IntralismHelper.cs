@@ -92,7 +92,7 @@ namespace IntralismManiaConverter.Intralism
                         Path.GetFileName(s.FilePath)))!);
         }
 
-        private static IEnumerable<Event> GetHitObjectEvents(IEnumerable<HitObject> hitObjects) =>
+        private IEnumerable<Event> GetHitObjectEvents(IEnumerable<HitObject> hitObjects) =>
             hitObjects?.Where(h => Enum.IsDefined(typeof(Position), (int)h.Position.X))
                       .GroupBy(
                           s => s.StartTime,
