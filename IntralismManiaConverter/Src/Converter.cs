@@ -24,7 +24,7 @@ namespace IntralismManiaConverter
             IntralismBeatMap intralismBeatMap = new (maniaBeatMap);
 
             string audioFileName = maniaBeatMap.GeneralSection.AudioFilename;
-            await SaveFiles(pathToBeatmapFile, outputFolder, audioFileName, intralismBeatMap.Helper.GetStoryboardPaths(), intralismBeatMap);
+            await SaveFiles(pathToBeatmapFile, outputFolder, audioFileName, intralismBeatMap.Helper, intralismBeatMap);
         }
 
         /// <summary>
@@ -39,16 +39,15 @@ namespace IntralismManiaConverter
             ManiaBeatMap maniaBeatMap = new (intralismBeatMap);
 
             string audioFileName = intralismBeatMap.MusicFile;
-            string backgroundFileName = intralismBeatMap.IconFile;
-            await SaveFiles(pathToBeatmapFile, outputFolder, audioFileName, new[] { backgroundFileName }, maniaBeatMap);
+            await SaveFiles(pathToBeatmapFile, outputFolder, audioFileName, maniaBeatMap.Helper, maniaBeatMap);
         }
 
-        private static async Task SaveFiles(string pathToBeatmapFile, string outputFolder, string audioFilename, IEnumerable<string> backgroundFileNames, ISavable savable)
+        private static async Task SaveFiles(string pathToBeatmapFile, string outputFolder, string audioFilename, IStoryboardable backgroundFileNames, ISavable savable)
         {
             string rootPath = Path.GetDirectoryName(pathToBeatmapFile);
 
             await AsyncSaveAudio(rootPath, outputFolder, audioFilename);
-            SaveImages(rootPath, outputFolder, backgroundFileNames);
+            SaveImages(rootPath, outputFolder, backgroundFileNames.ImagePaths);
             SaveConfig(outputFolder, savable);
         }
 

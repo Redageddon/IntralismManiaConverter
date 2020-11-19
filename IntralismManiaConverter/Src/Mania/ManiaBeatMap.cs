@@ -97,7 +97,7 @@ namespace IntralismManiaConverter.Mania
             this.EventsSection = new ()
             {
                 BackgroundImage = this.Helper.BackgroundImage,
-                Storyboard = new (),
+                Storyboard = this.Helper.GetStoryboard(),
             };
 
             this.TimingPoints = new ()
