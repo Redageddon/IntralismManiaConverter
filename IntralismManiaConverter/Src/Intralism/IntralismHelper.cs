@@ -17,7 +17,7 @@ namespace IntralismManiaConverter.Intralism
     public class IntralismHelper
     {
         private readonly ManiaBeatMap maniaBeatMap;
-        private readonly List<Event> events = new List<Event>();
+        private readonly IEnumerable<Event> events;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="IntralismHelper"/> class.
@@ -26,7 +26,7 @@ namespace IntralismManiaConverter.Intralism
         public IntralismHelper(ManiaBeatMap maniaBeatMap)
         {
             this.maniaBeatMap = maniaBeatMap;
-            this.SetStoryboardEvents();
+            this.events = this.GetStoryboardEvents();
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace IntralismManiaConverter.Intralism
         /// <summary>
         ///     Gets the first storyboard background.
         /// </summary>
-        public string IconFile => this.events[0].Data[1];
+        public string IconFile => this.GetStoryboardPaths()?.First();
 
         /// <summary>
         ///     Gets every resource for intralism.
@@ -62,7 +62,7 @@ namespace IntralismManiaConverter.Intralism
         /// <returns> A collection of events. </returns>
         public IEnumerable<Event> GetAllEvents()
         {
-            IEnumerable<Event> hitObjectEvents = GetHitObjectEvents(this.maniaBeatMap.HitObjects);
+            IEnumerable<Event> hitObjectEvents = this.GetHitObjectEvents(this.maniaBeatMap.HitObjects);
 
             return this.events?.Concat(hitObjectEvents!);
         }
@@ -81,23 +81,22 @@ namespace IntralismManiaConverter.Intralism
             }
         }
 
-        private void SetStoryboardEvents()
+        private IEnumerable<Event> GetStoryboardEvents()
         {
-            this.events.Add(new (0, this.maniaBeatMap.EventsSection.BackgroundImage));
+            yield return new (0, this.maniaBeatMap.EventsSection.BackgroundImage);
 
-            this.events.AddRange(
-                this.GetBackgroundStoryboards()?.Select(
-                    s => new Event(
-                        TimeSpan.FromMilliseconds(s.Commands.Commands[0].StartTime).TotalSeconds,
-                        Path.GetFileName(s.FilePath)))!);
+            foreach (StoryboardSprite sprite in this.GetBackgroundStoryboards())
+            {
+                yield return new (
+                    TimeSpan.FromMilliseconds(sprite.Commands.Commands[0].StartTime).TotalSeconds,
+                    Path.GetFileName(sprite.FilePath));
+            }
         }
 
         private IEnumerable<Event> GetHitObjectEvents(IEnumerable<HitObject> hitObjects) =>
             hitObjects?.Where(h => Enum.IsDefined(typeof(Position), (int)h.Position.X))
-                      .GroupBy(
-                          s => s.StartTime,
-                          (i, objects) =>
-                              new Event(TimeSpan.FromMilliseconds(i).TotalSeconds, objects));
+                      .GroupBy(s => s.StartTime, (i, objects) =>
+                                   new Event(TimeSpan.FromMilliseconds(i).TotalSeconds, objects));
 
         private IEnumerable<StoryboardSprite> GetBackgroundStoryboards() =>
             this.maniaBeatMap
