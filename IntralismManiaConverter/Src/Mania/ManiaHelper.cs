@@ -28,7 +28,8 @@ namespace IntralismManiaConverter.Mania
         public ManiaHelper(IntralismBeatMap intralismBeatMap) =>
             this.intralismBeatMap = intralismBeatMap;
 
-        public List<string> ImagePaths => new();
+        /// <inheritdoc />
+        public List<string> ImagePaths { get; } = new ();
 
         /// <summary>
         ///     Gets the name of the artist and defaults to "Intralism" if one isn't found.
@@ -106,10 +107,22 @@ namespace IntralismManiaConverter.Mania
             return storyboard;
         }
 
+        private static IEnumerable<HitCircle> IntralismToManiaNote(string data, int timing)
+        {
+            string rawData = data.Split(',')[0][1..^1];
+            string[] notes = rawData.Split('-');
+            IEnumerable<Position> positions = notes.Select(Enum.Parse<Position>);
+
+            return positions.Select(position => GetManiaHitObject(position, timing));
+        }
+
+        private static HitCircle GetManiaHitObject(Position position, int timing) =>
+            new (new Vector2((int)position, 192), timing, 1, 0, new Extras(), false, 0);
+
         private StoryboardSprite IntralismToManiaStoryboard(Event sprite)
         {
             LevelResource matchingResource = this.intralismBeatMap.LevelResources?.First(e => e.Name == sprite.Data[1].Split(',')[0]);
-            string mapEnd = this.intralismBeatMap.Events?.First(e => e.Data[0] == EventType.MapEnd.ToString()).Data[1]!;
+            string mapEnd = this.intralismBeatMap.Events?.First(e => e.Data[0] == EventType.MapEnd.ToString()).Data[1];
             mapEnd = string.IsNullOrEmpty(mapEnd)
                 ? "1000"
                 : mapEnd;
@@ -126,17 +139,5 @@ namespace IntralismManiaConverter.Mania
 
         private IEnumerable<Event> GetShowSpriteEvents() =>
             this.intralismBeatMap.Events?.Where(e => e.Data[0] == EventType.ShowSprite.ToString());
-
-        private static IEnumerable<HitCircle> IntralismToManiaNote(string data, int timing)
-        {
-            string rawData = data.Split(',')[0][1..^1];
-            string[] notes = rawData.Split('-');
-            IEnumerable<Position> positions = notes.Select(Enum.Parse<Position>);
-
-            return positions.Select(position => GetManiaHitObject(position, timing));
-        }
-
-        private static HitCircle GetManiaHitObject(Position position, int timing) =>
-            new (new Vector2((int)position, 192), timing, 1, 0, new Extras(), false, 0);
     }
 }

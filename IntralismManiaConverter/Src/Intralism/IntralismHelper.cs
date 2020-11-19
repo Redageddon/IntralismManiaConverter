@@ -21,14 +21,15 @@ namespace IntralismManiaConverter.Intralism
     {
         private readonly ManiaBeatMap maniaBeatMap;
 
-        public List<string> ImagePaths => new();
-
         /// <summary>
         ///     Initializes a new instance of the <see cref="IntralismHelper"/> class.
         /// </summary>
         /// <param name="maniaBeatMap"> The beatmap that the helper class is reading from. </param>
         public IntralismHelper(ManiaBeatMap maniaBeatMap) =>
             this.maniaBeatMap = maniaBeatMap;
+
+        /// <inheritdoc />
+        public List<string> ImagePaths { get; } = new ();
 
         /// <summary>
         ///     Gets the name of this beatmap.
