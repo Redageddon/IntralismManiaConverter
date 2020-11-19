@@ -75,9 +75,9 @@ namespace IntralismManiaConverter.Intralism
         {
             yield return this.maniaBeatMap.EventsSection.BackgroundImage;
 
-            foreach (StoryboardSprite s in this.GetBackgroundStoryboards())
+            foreach (StoryboardSprite sprite in this.GetBackgroundStoryboards())
             {
-                yield return s.FilePath;
+                yield return sprite.FilePath;
             }
         }
 
@@ -94,16 +94,26 @@ namespace IntralismManiaConverter.Intralism
         }
 
         private IEnumerable<Event> GetHitObjectEvents(IEnumerable<HitObject> hitObjects) =>
-            hitObjects?.Where(h => Enum.IsDefined(typeof(Position), (int)h.Position.X))
-                      .GroupBy(s => s.StartTime, (i, objects) =>
-                                   new Event(TimeSpan.FromMilliseconds(i).TotalSeconds, objects));
+            hitObjects?.Where(hitObject => Enum.IsDefined(typeof(Position), (int)hitObject.Position.X))
+                      .GroupBy(hitObject => hitObject.StartTime, this.ManiaToIntralismNote);
+
+        private Event ManiaToIntralismNote(int time, IEnumerable<HitObject> objects) =>
+            new ()
+            {
+                Time = TimeSpan.FromMilliseconds(time).TotalSeconds,
+                Data = new[]
+                {
+                    EventType.SpawnObj.ToString(),
+                    $"[{string.Join('-', objects?.Select(e => (Position)(int)e.Position.X)!)}]",
+                },
+            };
 
         private IEnumerable<StoryboardSprite> GetBackgroundStoryboards() =>
             this.maniaBeatMap
                 .EventsSection
                 .Storyboard
-                .BackgroundLayer?
-                .DistinctBy(e => e.FilePath)?
-                .Select(e => e as StoryboardSprite);
+                .BackgroundLayer
+                .DistinctBy(storyboardObject => storyboardObject.FilePath)?
+                .Select(storyboardObject => storyboardObject as StoryboardSprite);
     }
 }

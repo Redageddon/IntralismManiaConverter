@@ -82,6 +82,6 @@ namespace IntralismManiaConverter.Mania
         }
 
         private static HitCircle GetManiaHitObject(Position position, int timing) =>
-            new HitCircle(new Vector2((int)position, 192), timing, 1, 0, new (), false, 0);
+            new (new Vector2((int)position, 192), timing, 1, 0, new Extras(), false, 0);
     }
 }
