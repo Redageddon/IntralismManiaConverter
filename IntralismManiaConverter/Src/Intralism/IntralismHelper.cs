@@ -83,13 +83,11 @@ namespace IntralismManiaConverter.Intralism
 
         private IEnumerable<Event> GetStoryboardEvents()
         {
-            yield return new (0, this.maniaBeatMap.EventsSection.BackgroundImage);
+            yield return this.ManiaToIntralismStoryboard(0, this.maniaBeatMap.EventsSection.BackgroundImage);
 
             foreach (StoryboardSprite sprite in this.GetBackgroundStoryboards())
             {
-                yield return new (
-                    TimeSpan.FromMilliseconds(sprite.Commands.Commands[0].StartTime).TotalSeconds,
-                    Path.GetFileName(sprite.FilePath));
+                yield return this.ManiaToIntralismStoryboard(sprite.Commands.Commands[0].StartTime, sprite.FilePath);
             }
         }
 
@@ -105,6 +103,17 @@ namespace IntralismManiaConverter.Intralism
                 {
                     EventType.SpawnObj.ToString(),
                     $"[{string.Join('-', objects?.Select(e => (Position)(int)e.Position.X)!)}]",
+                },
+            };
+
+        private Event ManiaToIntralismStoryboard(int time, string path) =>
+            new ()
+            {
+                Time = TimeSpan.FromMilliseconds(time).TotalSeconds,
+                Data = new[]
+                {
+                    EventType.ShowSprite.ToString(),
+                    $"{Path.GetFileName(path)},0,False,0,0,0",
                 },
             };
 
