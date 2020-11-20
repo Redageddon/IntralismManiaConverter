@@ -21,13 +21,17 @@ namespace IntralismManiaConverter.Intralism
     public class IntralismHelper : IStoryboardable
     {
         private readonly ManiaBeatMap maniaBeatMap;
+        private readonly IEnumerable<Event> events;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="IntralismHelper"/> class.
         /// </summary>
         /// <param name="maniaBeatMap"> The beatmap that the helper class is reading from. </param>
-        public IntralismHelper(ManiaBeatMap maniaBeatMap) =>
+        public IntralismHelper(ManiaBeatMap maniaBeatMap)
+        {
             this.maniaBeatMap = maniaBeatMap;
+            this.events = this.GetAllEvents();
+        }
 
         /// <inheritdoc />
         public List<string> ImagePaths { get; } = new ();
