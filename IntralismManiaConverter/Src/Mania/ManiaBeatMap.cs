@@ -47,6 +47,7 @@ namespace IntralismManiaConverter.Mania
         {
             this.Helper = new ManiaHelper(intralismBeatMap);
             this.Version = 14;
+            this.Helper.ImagePaths.Add(this.Helper.BackgroundImage);
 
             this.GeneralSection = new ()
             {
