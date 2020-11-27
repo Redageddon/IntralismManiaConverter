@@ -56,7 +56,7 @@ namespace IntralismManiaConverter.Intralism
             this.Info = this.Helper.Info;
             this.LevelResources = this.Helper.GetLevelResources();
             this.MusicTime = this.Helper.MusicTime;
-            this.Events = this.Helper.GetAllEvents();
+            this.Events = this.Helper.Events;
             this.IconFile = this.Helper.IconFile;
         }
 
