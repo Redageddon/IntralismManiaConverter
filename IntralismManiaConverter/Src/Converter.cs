@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using IntralismManiaConverter.Interface;
 using IntralismManiaConverter.Intralism;
 using IntralismManiaConverter.Mania;
+using OsuParsers.Beatmaps.Objects;
 
 namespace IntralismManiaConverter
 {
@@ -28,6 +29,23 @@ namespace IntralismManiaConverter
         }
 
         /// <summary>
+        ///     Reads mania data and saves it as an intralism beatmap.
+        /// </summary>
+        /// <param name="pathToBeatmapFile"> The path to a osu mania ".osu" file. </param>
+        /// <param name="outputFolder"> The path to the intralism beatmap output. </param>
+        /// <param name="speed"> The speed the intralism map should have. </param>
+        /// <returns> A <see cref="Task"/> representing the asynchronous operation. </returns>
+        public static async Task AsyncConvertManiaToIntralism(string pathToBeatmapFile, string outputFolder, double speed)
+        {
+            ManiaBeatMap maniaBeatMap = new (pathToBeatmapFile);
+            IntralismBeatMap intralismBeatMap = new (maniaBeatMap);
+            intralismBeatMap.Speed = speed;
+
+            string audioFileName = maniaBeatMap.GeneralSection.AudioFilename;
+            await SaveFiles(pathToBeatmapFile, outputFolder, audioFileName, intralismBeatMap.Helper, intralismBeatMap);
+        }
+
+        /// <summary>
         ///     Reads intralism data and saves it as a mania beatmap.
         /// </summary>
         /// <param name="pathToBeatmapFile"> The path to a intralism "config.txt" file. </param>
@@ -37,6 +55,28 @@ namespace IntralismManiaConverter
         {
             IntralismBeatMap intralismBeatMap = new (pathToBeatmapFile);
             ManiaBeatMap maniaBeatMap = new (intralismBeatMap);
+
+            string audioFileName = intralismBeatMap.MusicFile;
+            await SaveFiles(pathToBeatmapFile, outputFolder, audioFileName, maniaBeatMap.Helper, maniaBeatMap);
+        }
+
+        /// <summary>
+        ///     Reads intralism data and saves it as a mania beatmap.
+        /// </summary>
+        /// <param name="pathToBeatmapFile"> The path to a intralism "config.txt" file. </param>
+        /// <param name="outputFolder"> The path to the osu mania beatmap output. </param>
+        /// <param name="offset"> The offset the mania map should have. </param>
+        /// <returns> A <see cref="Task"/> representing the asynchronous operation. </returns>
+        public static async Task AsyncConvertIntralismToMania(string pathToBeatmapFile, string outputFolder, int offset)
+        {
+            IntralismBeatMap intralismBeatMap = new (pathToBeatmapFile);
+            ManiaBeatMap maniaBeatMap = new (intralismBeatMap);
+
+            foreach (HitObject hitObject in maniaBeatMap.HitObjects)
+            {
+                hitObject.StartTime += offset;
+                hitObject.EndTime += offset;
+            }
 
             string audioFileName = intralismBeatMap.MusicFile;
             await SaveFiles(pathToBeatmapFile, outputFolder, audioFileName, maniaBeatMap.Helper, maniaBeatMap);
