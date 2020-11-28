@@ -1,15 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using IntralismManiaConverter.Enums;
 using IntralismManiaConverter.Interface;
 using IntralismManiaConverter.Intralism;
 using OsuParsers.Beatmaps.Objects;
-using OsuParsers.Enums.Storyboards;
 using OsuParsers.Storyboards;
-using OsuParsers.Storyboards.Objects;
 using EventType = IntralismManiaConverter.Enums.EventType;
 
 namespace IntralismManiaConverter.Mania
@@ -25,8 +22,15 @@ namespace IntralismManiaConverter.Mania
         ///     Initializes a new instance of the <see cref="ManiaHelper"/> class.
         /// </summary>
         /// <param name="intralismBeatMap"> The intralism beatmap having data pulled from. </param>
-        public ManiaHelper(IntralismBeatMap intralismBeatMap) =>
+        public ManiaHelper(IntralismBeatMap intralismBeatMap)
+        {
             this.intralismBeatMap = intralismBeatMap;
+            ManiaStoryboardHelper storyboardHelper = new (intralismBeatMap);
+            this.Storyboard = storyboardHelper.Storyboard;
+
+            this.ImagePaths.Add(this.BackgroundImage);
+            this.ImagePaths.AddRange(storyboardHelper.SpritePaths!);
+        }
 
         /// <inheritdoc />
         public List<string> ImagePaths { get; } = new ();
@@ -67,49 +71,21 @@ namespace IntralismManiaConverter.Mania
         public string AudioFilename => this.intralismBeatMap.MusicFile;
 
         /// <summary>
-        ///     Gets all events of type "SpawnObj".
+        ///     Gets a storyboard filled with intralism sprites.
         /// </summary>
-        /// <returns> A collection of Spawn Objects. </returns>
-        public IEnumerable<Event> SpawnObjects =>
-            this.intralismBeatMap.Events?.Where(e => e.Data[0] == EventType.SpawnObj.ToString());
+        public Storyboard Storyboard { get; }
 
         /// <summary>
         ///     Gets all Events of type hitObject.
         /// </summary>
         /// <param name="spawnObjects"> All intralism events. </param>
         /// <returns> A collection of hitObjects. </returns>
-        public static IEnumerable<HitObject> GetManiaHitObjects(IEnumerable<Event> spawnObjects) =>
-            spawnObjects?.SelectMany(e => IntralismToManiaNote(e.Data[1], (int)TimeSpan.FromSeconds(e.Time).TotalMilliseconds));
+        public IEnumerable<HitObject> GetManiaHitObjects() =>
+            this.SpawnObjects()?.SelectMany(@event => IntralismToManiaNote(@event, (int)TimeSpan.FromSeconds(@event.Time).TotalMilliseconds));
 
-        /// <summary>
-        ///     Gets a storyboard filled with intralism sprites.
-        /// </summary>
-        /// <returns> A filled storyboard. </returns>
-        public Storyboard GetStoryboard()
+        private static IEnumerable<HitCircle> IntralismToManiaNote(Event data, int timing)
         {
-            Storyboard storyboard = new ();
-            IEnumerable<Event> spriteEvents = this.GetShowSpriteEvents();
-
-            foreach (Event spriteEvent in spriteEvents)
-            {
-                StoryboardSprite sprite = this.IntralismToManiaStoryboard(spriteEvent);
-                this.ImagePaths.Add(sprite.FilePath);
-
-                switch (spriteEvent.Data[1].Split(',')[1])
-                {
-                    case "0": storyboard.BackgroundLayer.Add(sprite);
-                        break;
-                    case "1": storyboard.ForegroundLayer.Add(sprite);
-                        break;
-                }
-            }
-
-            return storyboard;
-        }
-
-        private static IEnumerable<HitCircle> IntralismToManiaNote(string data, int timing)
-        {
-            string rawData = data.Split(',')[0][1..^1];
+            string rawData = data.GetTrimmedInnerData();
             string[] notes = rawData.Split('-');
             IEnumerable<Position> positions = notes.Select(Enum.Parse<Position>);
 
@@ -119,25 +95,7 @@ namespace IntralismManiaConverter.Mania
         private static HitCircle GetManiaHitObject(Position position, int timing) =>
             new (new Vector2((int)position, 192), timing, 1, 0, new Extras(), false, 0);
 
-        private StoryboardSprite IntralismToManiaStoryboard(Event sprite)
-        {
-            LevelResource matchingResource = this.intralismBeatMap.LevelResources?.First(e => e.Name == sprite.Data[1].Split(',')[0]);
-            string mapEnd = this.intralismBeatMap.Events?.First(e => e.Data[0] == EventType.MapEnd.ToString()).Data[1];
-            mapEnd = string.IsNullOrEmpty(mapEnd)
-                ? "1000"
-                : mapEnd;
-            double endTimeInSeconds = double.Parse(mapEnd);
-
-            int startTime = (int)TimeSpan.FromSeconds(sprite.Time).TotalMilliseconds;
-            int endTime = (int)TimeSpan.FromSeconds(endTimeInSeconds).TotalMilliseconds;
-
-            StoryboardSprite storyboardSprite = new (Origins.Centre, matchingResource.Path, 0, 0);
-            storyboardSprite.Commands.Commands.Add(new (Easing.None, startTime, endTime - startTime, Color.White, Color.White));
-
-            return storyboardSprite;
-        }
-
-        private IEnumerable<Event> GetShowSpriteEvents() =>
-            this.intralismBeatMap.Events?.Where(e => e.Data[0] == EventType.ShowSprite.ToString());
+        private IEnumerable<Event> SpawnObjects() =>
+            this.intralismBeatMap.Events?.Where(e => e.IsEventOfType(EventType.SpawnObj));
     }
 }

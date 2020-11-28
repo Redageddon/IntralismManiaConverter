@@ -97,7 +97,7 @@ namespace IntralismManiaConverter.Mania
             this.EventsSection = new ()
             {
                 BackgroundImage = this.Helper.BackgroundImage,
-                Storyboard = this.Helper.GetStoryboard(),
+                Storyboard = this.Helper.Storyboard,
             };
 
             this.TimingPoints = new ()
@@ -115,7 +115,7 @@ namespace IntralismManiaConverter.Mania
                 },
             };
 
-            this.HitObjects.AddRange(ManiaHelper.GetManiaHitObjects(this.Helper.SpawnObjects)!);
+            this.HitObjects.AddRange(this.Helper.GetManiaHitObjects()!);
         }
 
         /// <summary>

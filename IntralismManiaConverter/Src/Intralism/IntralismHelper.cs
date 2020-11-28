@@ -21,7 +21,6 @@ namespace IntralismManiaConverter.Intralism
     public class IntralismHelper : IStoryboardable
     {
         private readonly ManiaBeatMap maniaBeatMap;
-        private readonly IEnumerable<Event> events;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="IntralismHelper"/> class.
@@ -30,7 +29,8 @@ namespace IntralismManiaConverter.Intralism
         public IntralismHelper(ManiaBeatMap maniaBeatMap)
         {
             this.maniaBeatMap = maniaBeatMap;
-            this.events = this.GetAllEvents();
+            this.AllEvents = this.GetAllEvents();
+            this.LevelResources = this.ImagePaths?.Select(path => new LevelResource(Path.GetFileName(path)));
         }
 
         /// <inheritdoc />
@@ -59,21 +59,12 @@ namespace IntralismManiaConverter.Intralism
         /// <summary>
         ///     Gets every resource for intralism.
         /// </summary>
-        /// <returns> A collection of resources. </returns>
-        public IEnumerable<LevelResource> GetLevelResources() =>
-            this.ImagePaths?.Select(path => new LevelResource(Path.GetFileName(path)));
+        public IEnumerable<LevelResource> LevelResources { get; }
 
         /// <summary>
         ///     Gets every event for intralism.
         /// </summary>
-        /// <returns> A collection of events. </returns>
-        public IEnumerable<Event> GetAllEvents()
-        {
-            IEnumerable<Event> hitObjectEvents = GetHitObjectEvents(this.maniaBeatMap.HitObjects);
-            IEnumerable<Event> storyboardEvents = this.GetStoryboardEvents();
-
-            return storyboardEvents?.Concat(hitObjectEvents!);
-        }
+        public IEnumerable<Event> AllEvents { get; }
 
         private static Event ManiaToIntralismNote(int time, IEnumerable<HitObject> objects) =>
             new ()
@@ -81,26 +72,8 @@ namespace IntralismManiaConverter.Intralism
                 Time = TimeSpan.FromMilliseconds(time).TotalSeconds,
                 Data = new[]
                 {
-                    EventType.SpawnObj.ToString(),
+                    nameof(EventType.SpawnObj),
                     $"[{string.Join('-', objects?.Select(e => (Position)(int)e.Position.X)!)}]",
-                },
-            };
-
-        private static Event ManiaToIntralismStoryboard(
-            int time,
-            string path,
-            int spritePosition = 0,
-            bool keepAspectRatio = true,
-            float duration = 0,
-            float fadeInDuration = 0,
-            float fadeOutDuration = 0) =>
-            new ()
-            {
-                Time = TimeSpan.FromMilliseconds(time).TotalSeconds,
-                Data = new[]
-                {
-                    EventType.ShowSprite.ToString(),
-                    $"{Path.GetFileName(path)},{spritePosition},{keepAspectRatio},{duration},{fadeInDuration},{fadeOutDuration}",
                 },
             };
 
@@ -114,18 +87,26 @@ namespace IntralismManiaConverter.Intralism
                 .Select(storyboardObject => storyboardObject as StoryboardSprite)
                 .Where(sprite => sprite.Commands.Commands.Count != 0);
 
+        private IEnumerable<Event> GetAllEvents()
+        {
+            IEnumerable<Event> hitObjectEvents = GetHitObjectEvents(this.maniaBeatMap.HitObjects);
+            IEnumerable<Event> storyboardEvents = this.GetStoryboardEvents();
+
+            return storyboardEvents?.Concat(hitObjectEvents!);
+        }
+
         private IEnumerable<Event> GetStoryboardEvents()
         {
             BeatmapEventsSection eventsSection = this.maniaBeatMap.EventsSection;
 
-            yield return ManiaToIntralismStoryboard(0, eventsSection.BackgroundImage);
+            yield return IntralismStoryboardHelper.ManiaToIntralismStoryboard(0, eventsSection.BackgroundImage);
             this.ImagePaths.Add(eventsSection.BackgroundImage);
 
             foreach (StoryboardSprite sprite in GetStoryboardSprites(eventsSection.Storyboard.BackgroundLayer)?.Concat(GetStoryboardSprites(eventsSection.Storyboard.ForegroundLayer)))
             {
                 this.ImagePaths.Add(sprite.FilePath);
                 Command command = sprite.Commands.Commands[0];
-                yield return ManiaToIntralismStoryboard(command.StartTime, sprite.FilePath, duration: command.EndTime - command.StartTime);
+                yield return IntralismStoryboardHelper.ManiaToIntralismStoryboard(command.StartTime, sprite.FilePath, duration: command.EndTime - command.StartTime);
             }
         }
     }

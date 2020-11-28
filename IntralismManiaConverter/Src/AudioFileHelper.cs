@@ -9,7 +9,7 @@ namespace IntralismManiaConverter
     /// </summary>
     public static class AudioFileHelper
     {
-        private static Engine ffmpeg = new Engine();
+        private static Engine ffmpeg = new ();
         private static string ffmpegPath;
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace IntralismManiaConverter
         {
             if (Path.GetExtension(startPath) != ".ogg")
             {
-                endPath = Path.Combine(Path.GetDirectoryName(endPath) !, "music.ogg");
+                endPath = Path.Combine(Path.GetDirectoryName(endPath)!, "music.ogg");
 
                 await ffmpeg.ConvertAsync(
                     new (startPath),
