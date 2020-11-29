@@ -106,13 +106,13 @@ namespace IntralismManiaConverter.Intralism
         ///     Gets or sets the amount of lives in the beatmap.
         /// </summary>
         [JsonPropertyName("lives")]
-        public int Lives { get; set; } = 10;
+        public int Lives { get; set; } = 50;
 
         /// <summary>
         ///     Gets or sets the maximum amount of lives in a beatmap.
         /// </summary>
         [JsonPropertyName("maxLives")]
-        public int MaxLives { get; set; } = 10;
+        public int MaxLives { get; set; } = 50;
 
         /// <summary>
         ///     Gets or sets the music file name.

@@ -5,13 +5,8 @@ using System.Linq;
 using IntralismManiaConverter.Enums;
 using IntralismManiaConverter.Interface;
 using IntralismManiaConverter.Mania;
-using MoreLinq;
 using NAudio.Wave;
 using OsuParsers.Beatmaps.Objects;
-using OsuParsers.Beatmaps.Sections;
-using OsuParsers.Storyboards.Commands;
-using OsuParsers.Storyboards.Interfaces;
-using OsuParsers.Storyboards.Objects;
 
 namespace IntralismManiaConverter.Intralism
 {
@@ -22,6 +17,8 @@ namespace IntralismManiaConverter.Intralism
     {
         private readonly ManiaBeatMap maniaBeatMap;
 
+        private readonly IntralismStoryboardHelper storyboardHelper;
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="IntralismHelper"/> class.
         /// </summary>
@@ -29,6 +26,10 @@ namespace IntralismManiaConverter.Intralism
         public IntralismHelper(ManiaBeatMap maniaBeatMap)
         {
             this.maniaBeatMap = maniaBeatMap;
+            this.storyboardHelper = new (maniaBeatMap);
+            this.ImagePaths = this.storyboardHelper.ImagePaths;
+            this.IconFile = this.storyboardHelper.ImagePaths[0];
+
             this.AllEvents = this.GetAllEvents();
             this.LevelResources = this.ImagePaths?.Select(path => new LevelResource(Path.GetFileName(path)));
         }
@@ -54,7 +55,7 @@ namespace IntralismManiaConverter.Intralism
         /// <summary>
         ///     Gets the first storyboard background.
         /// </summary>
-        public string IconFile => this.ImagePaths[0];
+        public string IconFile { get; }
 
         /// <summary>
         ///     Gets every resource for intralism.
@@ -77,37 +78,16 @@ namespace IntralismManiaConverter.Intralism
                 },
             };
 
-        private static IEnumerable<Event> GetHitObjectEvents(IEnumerable<HitObject> hitObjects) =>
-            hitObjects?.Where(hitObject => Enum.IsDefined(typeof(Position), (int)hitObject.Position.X))
-                      .GroupBy(hitObject => hitObject.StartTime, ManiaToIntralismNote);
-
-        private static IEnumerable<StoryboardSprite> GetStoryboardSprites(IEnumerable<IStoryboardObject> storyboardObjects) =>
-            storyboardObjects
-                .DistinctBy(storyboardObject => storyboardObject.FilePath)?
-                .Select(storyboardObject => storyboardObject as StoryboardSprite)
-                .Where(sprite => sprite.Commands.Commands.Count != 0);
+        private IEnumerable<Event> GetHitObjectEvents() =>
+            this.maniaBeatMap.HitObjects?.Where(hitObject => Enum.IsDefined(typeof(Position), (int)hitObject.Position.X))
+                .GroupBy(hitObject => hitObject.StartTime, ManiaToIntralismNote);
 
         private IEnumerable<Event> GetAllEvents()
         {
-            IEnumerable<Event> hitObjectEvents = GetHitObjectEvents(this.maniaBeatMap.HitObjects);
-            IEnumerable<Event> storyboardEvents = this.GetStoryboardEvents();
+            IEnumerable<Event> hitObjectEvents = this.GetHitObjectEvents();
+            IEnumerable<Event> storyboardEvents = this.storyboardHelper.StoryboardEvents;
 
             return storyboardEvents?.Concat(hitObjectEvents!);
-        }
-
-        private IEnumerable<Event> GetStoryboardEvents()
-        {
-            BeatmapEventsSection eventsSection = this.maniaBeatMap.EventsSection;
-
-            yield return IntralismStoryboardHelper.ManiaToIntralismStoryboard(0, eventsSection.BackgroundImage);
-            this.ImagePaths.Add(eventsSection.BackgroundImage);
-
-            foreach (StoryboardSprite sprite in GetStoryboardSprites(eventsSection.Storyboard.BackgroundLayer)?.Concat(GetStoryboardSprites(eventsSection.Storyboard.ForegroundLayer)))
-            {
-                this.ImagePaths.Add(sprite.FilePath);
-                Command command = sprite.Commands.Commands[0];
-                yield return IntralismStoryboardHelper.ManiaToIntralismStoryboard(command.StartTime, sprite.FilePath, duration: command.EndTime - command.StartTime);
-            }
         }
     }
 }
