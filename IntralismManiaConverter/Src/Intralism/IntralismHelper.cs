@@ -35,7 +35,7 @@ namespace IntralismManiaConverter.Intralism
         }
 
         /// <inheritdoc />
-        public List<string> ImagePaths { get; } = new ();
+        public List<string> ImagePaths { get; }
 
         /// <summary>
         ///     Gets the name of this beatmap.

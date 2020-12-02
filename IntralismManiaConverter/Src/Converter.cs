@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using IntralismManiaConverter.Interface;
 using IntralismManiaConverter.Intralism;
 using IntralismManiaConverter.Mania;
+using OsuParsers.Beatmaps.Objects;
 
 namespace IntralismManiaConverter
 {
@@ -18,10 +19,15 @@ namespace IntralismManiaConverter
         /// <param name="pathToBeatmapFile"> The path to a osu mania ".osu" file. </param>
         /// <param name="outputFolder"> The path to the intralism beatmap output. </param>
         /// <returns> A <see cref="Task"/> representing the asynchronous operation. </returns>
-        public static async Task AsyncConvertManiaToIntralism(string pathToBeatmapFile, string outputFolder)
+        public static async Task AsyncConvertManiaToIntralism(string pathToBeatmapFile, string outputFolder, double speed = 0)
         {
             ManiaBeatMap maniaBeatMap = new (pathToBeatmapFile);
             IntralismBeatMap intralismBeatMap = new (maniaBeatMap);
+
+            if (speed != 0)
+            {
+                intralismBeatMap.Speed = speed;
+            }
 
             string audioFileName = maniaBeatMap.GeneralSection.AudioFilename;
             await SaveFiles(pathToBeatmapFile, outputFolder, audioFileName, intralismBeatMap.Helper, intralismBeatMap);
@@ -33,10 +39,19 @@ namespace IntralismManiaConverter
         /// <param name="pathToBeatmapFile"> The path to a intralism "config.txt" file. </param>
         /// <param name="outputFolder"> The path to the osu mania beatmap output. </param>
         /// <returns> A <see cref="Task"/> representing the asynchronous operation. </returns>
-        public static async Task AsyncConvertIntralismToMania(string pathToBeatmapFile, string outputFolder)
+        public static async Task AsyncConvertIntralismToMania(string pathToBeatmapFile, string outputFolder, int offset = 0)
         {
             IntralismBeatMap intralismBeatMap = new (pathToBeatmapFile);
             ManiaBeatMap maniaBeatMap = new (intralismBeatMap);
+
+            if (offset != 0)
+            {
+                foreach (HitObject hitObject in maniaBeatMap.HitObjects)
+                {
+                    hitObject.StartTime += offset;
+                    hitObject.EndTime += offset;
+                }
+            }
 
             string audioFileName = intralismBeatMap.MusicFile;
             await SaveFiles(pathToBeatmapFile, outputFolder, audioFileName, maniaBeatMap.Helper, maniaBeatMap);

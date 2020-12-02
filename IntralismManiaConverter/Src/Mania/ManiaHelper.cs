@@ -78,7 +78,6 @@ namespace IntralismManiaConverter.Mania
         /// <summary>
         ///     Gets all Events of type hitObject.
         /// </summary>
-        /// <param name="spawnObjects"> All intralism events. </param>
         /// <returns> A collection of hitObjects. </returns>
         public IEnumerable<HitObject> GetManiaHitObjects() =>
             this.SpawnObjects()?.SelectMany(@event => IntralismToManiaNote(@event, (int)TimeSpan.FromSeconds(@event.Time).TotalMilliseconds));
