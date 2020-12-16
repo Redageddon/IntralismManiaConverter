@@ -56,9 +56,9 @@ namespace IntralismManiaConverter.Mania
 
             this.DifficultySection = new BeatmapDifficultySection
             {
-                HPDrainRate = 5,
+                HPDrainRate = 8,
                 CircleSize = 4,
-                OverallDifficulty = 5,
+                OverallDifficulty = 8,
                 ApproachRate = 5,
                 SliderMultiplier = 1.4,
                 SliderTickRate = 1,
