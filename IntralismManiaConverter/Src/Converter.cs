@@ -75,9 +75,14 @@ namespace IntralismManiaConverter
 
         private static void SaveConfig(string outputFolder, ISavable savable)
         {
-            string outputFileName = savable is ManiaBeatMap
-                ? "config.osu"
-                : "config.txt";
+            string outputFileName = "config.txt";
+            if (savable is ManiaBeatMap map)
+            {
+                string artist = map.Helper.Artist;
+                string title = map.Helper.Title;
+                outputFileName = $"{artist} - {title} [Intralism].osu";
+            }
+
             string configEndPath = Path.Combine(outputFolder!, outputFileName);
             savable.SaveToFile(configEndPath);
         }
