@@ -5,6 +5,7 @@ using System.Linq;
 using IntralismManiaConverter.Enums;
 using IntralismManiaConverter.Interface;
 using IntralismManiaConverter.Mania;
+using NAudio.Vorbis;
 using NAudio.Wave;
 using OsuParsers.Beatmaps.Objects;
 
@@ -50,7 +51,25 @@ namespace IntralismManiaConverter.Intralism
         /// <summary>
         ///     Gets the total length of a song in seconds.
         /// </summary>
-        public double MusicTime => new Mp3FileReader(Path.Combine(Path.GetDirectoryName(this.maniaBeatMap.Path)!, this.maniaBeatMap.GeneralSection.AudioFilename!)).TotalTime.TotalSeconds;
+        public double MusicTime
+        {
+            get
+            {
+                string path = Path.Combine(
+                    Path.GetDirectoryName(this.maniaBeatMap.Path)!,
+                    this.maniaBeatMap.GeneralSection.AudioFilename!);
+
+                string extension = Path.GetExtension(path);
+
+                return extension switch
+                {
+                    ".mp3" => new Mp3FileReader(path).TotalTime.TotalSeconds,
+                    ".wav" => new MediaFoundationReader(path).TotalTime.TotalSeconds,
+                    ".ogg" => new VorbisWaveReader(path).TotalTime.TotalSeconds,
+                    var _ => 0,
+                };
+            }
+        }
 
         /// <summary>
         ///     Gets the first storyboard background.
