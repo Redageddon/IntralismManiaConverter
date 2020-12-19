@@ -33,10 +33,10 @@ namespace IntralismManiaConverter
         /// <returns> A <see cref="Task"/> representing the asynchronous operation. </returns>
         public static async Task AsyncSaveAudio(string startPath, string endPath)
         {
+            endPath = Path.Combine(Path.GetDirectoryName(endPath)!, "music.ogg");
+
             if (Path.GetExtension(startPath) != ".ogg")
             {
-                endPath = Path.Combine(Path.GetDirectoryName(endPath)!, "music.ogg");
-
                 await ffmpeg.ConvertAsync(
                     new (startPath),
                     new (endPath));
