@@ -71,7 +71,7 @@ namespace IntralismManiaConverter.Mania
 
         private int GetMapEndTime()
         {
-            string mapEndTime = this.GetMapEndEvent().Data[1];
+            string mapEndTime = this.GetMapEndEvent()?.Data[1];
             mapEndTime = string.IsNullOrEmpty(mapEndTime)
                 ? new VorbisReader(Path.Combine(Path.GetDirectoryName(this.intralismBeatMap.Path)!, this.intralismBeatMap.MusicFile!)).TotalTime.TotalSeconds.ToString()
                 : mapEndTime;
@@ -85,7 +85,7 @@ namespace IntralismManiaConverter.Mania
             this.intralismBeatMap.Events?.Where(e => e.IsEventOfType(EventType.ShowSprite));
 
         private Event GetMapEndEvent() =>
-            this.intralismBeatMap.Events?.First(e => e.IsEventOfType(EventType.MapEnd));
+            this.intralismBeatMap.Events?.FirstOrDefault(e => e.IsEventOfType(EventType.MapEnd));
 
         private LevelResource GetMatchingResource(Event @event)
         {
