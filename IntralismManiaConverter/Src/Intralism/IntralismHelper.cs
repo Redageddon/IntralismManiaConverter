@@ -27,16 +27,13 @@ namespace IntralismManiaConverter.Intralism
         public IntralismHelper(ManiaBeatMap maniaBeatMap)
         {
             this.maniaBeatMap = maniaBeatMap;
-            this.storyboardHelper = new (maniaBeatMap);
+            this.storyboardHelper = new IntralismStoryboardHelper(maniaBeatMap);
             this.ImagePaths = this.storyboardHelper.ImagePaths;
             this.IconFile = this.storyboardHelper.ImagePaths[0];
 
             this.AllEvents = this.GetAllEvents();
-            this.LevelResources = this.ImagePaths?.Select(path => new LevelResource(Path.GetFileName(path)));
+            this.LevelResources = this.ImagePaths.Select(path => new LevelResource(Path.GetFileName(path)));
         }
-
-        /// <inheritdoc />
-        public List<string> ImagePaths { get; }
 
         /// <summary>
         ///     Gets the name of this beatmap.
@@ -46,7 +43,8 @@ namespace IntralismManiaConverter.Intralism
         /// <summary>
         ///     Gets the info for intralism.
         /// </summary>
-        public string Info => $"Mania convert https://osu.ppy.sh/beatmapsets/{this.maniaBeatMap.MetadataSection.BeatmapSetID}/discussion/{this.maniaBeatMap.MetadataSection.BeatmapID} by {this.maniaBeatMap.MetadataSection.Creator}";
+        public string Info =>
+            $"Mania convert https://osu.ppy.sh/beatmapsets/{this.maniaBeatMap.MetadataSection.BeatmapSetID}/discussion/{this.maniaBeatMap.MetadataSection.BeatmapID} by {this.maniaBeatMap.MetadataSection.Creator}";
 
         /// <summary>
         ///     Gets the total length of a song in seconds.
@@ -55,9 +53,8 @@ namespace IntralismManiaConverter.Intralism
         {
             get
             {
-                string path = Path.Combine(
-                    Path.GetDirectoryName(this.maniaBeatMap.Path)!,
-                    this.maniaBeatMap.GeneralSection.AudioFilename!);
+                string path = Path.Combine(Path.GetDirectoryName(this.maniaBeatMap.Path)!,
+                                           this.maniaBeatMap.GeneralSection.AudioFilename);
 
                 string extension = Path.GetExtension(path);
 
@@ -66,7 +63,7 @@ namespace IntralismManiaConverter.Intralism
                     ".mp3" => new Mp3FileReader(path).TotalTime.TotalSeconds,
                     ".wav" => new WaveFileReader(path).TotalTime.TotalSeconds,
                     ".ogg" => new VorbisWaveReader(path).TotalTime.TotalSeconds,
-                    var _  => 0,
+                    _      => 0,
                 };
             }
         }
@@ -86,27 +83,27 @@ namespace IntralismManiaConverter.Intralism
         /// </summary>
         public IEnumerable<Event> AllEvents { get; }
 
-        private static Event ManiaToIntralismNote(int time, IEnumerable<HitObject> objects) =>
-            new ()
-            {
-                Time = TimeSpan.FromMilliseconds(time).TotalSeconds,
-                Data = new[]
-                {
-                    nameof(EventType.SpawnObj),
-                    $"[{string.Join('-', objects?.Select(e => (Position)(int)e.Position.X)!)}]",
-                },
-            };
-
-        private IEnumerable<Event> GetHitObjectEvents() =>
-            this.maniaBeatMap.HitObjects?.Where(hitObject => Enum.IsDefined(typeof(Position), (int)hitObject.Position.X))
-                .GroupBy(hitObject => hitObject.StartTime, ManiaToIntralismNote);
+        /// <inheritdoc/>
+        public List<string> ImagePaths { get; }
 
         private IEnumerable<Event> GetAllEvents()
         {
             IEnumerable<Event> hitObjectEvents = this.GetHitObjectEvents();
             IEnumerable<Event> storyboardEvents = this.storyboardHelper.StoryboardEvents;
 
-            return storyboardEvents?.Concat(hitObjectEvents!);
+            return storyboardEvents.Concat(hitObjectEvents!);
         }
+
+        private IEnumerable<Event> GetHitObjectEvents() =>
+            this.maniaBeatMap.HitObjects
+                .Where(hitObject => Enum.IsDefined((Position)(int)hitObject.Position.X))
+                .GroupBy(hitObject => hitObject.StartTime, ManiaToIntralismNote);
+
+        private static Event ManiaToIntralismNote(int time, IEnumerable<HitObject> objects) =>
+            new()
+            {
+                Time = TimeSpan.FromMilliseconds(time).TotalSeconds,
+                Data = new[] { nameof(EventType.SpawnObj), $"[{string.Join('-', objects.Select(e => (Position)(int)e.Position.X)!)}]" },
+            };
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace IntralismManiaConverter.Interface
 {
     /// <summary>
-    ///     Allows a helper class to store all savable image paths.
+    ///     Allows a helper type to store all savable image paths.
     /// </summary>
     public interface IStoryboardable
     {

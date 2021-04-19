@@ -7,7 +7,6 @@ using IntralismManiaConverter.Interface;
 using IntralismManiaConverter.Intralism;
 using OsuParsers.Beatmaps.Objects;
 using OsuParsers.Storyboards;
-using EventType = IntralismManiaConverter.Enums.EventType;
 
 namespace IntralismManiaConverter.Mania
 {
@@ -25,15 +24,12 @@ namespace IntralismManiaConverter.Mania
         public ManiaHelper(IntralismBeatMap intralismBeatMap)
         {
             this.intralismBeatMap = intralismBeatMap;
-            ManiaStoryboardHelper storyboardHelper = new (intralismBeatMap);
+            ManiaStoryboardHelper storyboardHelper = new(intralismBeatMap);
             this.Storyboard = storyboardHelper.Storyboard;
 
             this.ImagePaths.Add(this.BackgroundImage);
             this.ImagePaths.AddRange(storyboardHelper.SpritePaths!);
         }
-
-        /// <inheritdoc />
-        public List<string> ImagePaths { get; } = new ();
 
         /// <summary>
         ///     Gets the name of the artist and defaults to "Intralism" if one isn't found.
@@ -43,6 +39,7 @@ namespace IntralismManiaConverter.Mania
             get
             {
                 string[] names = this.intralismBeatMap.Name.Split('-');
+
                 return names.Length > 1
                     ? names[0]
                     : "Intralism";
@@ -75,26 +72,28 @@ namespace IntralismManiaConverter.Mania
         /// </summary>
         public Storyboard Storyboard { get; }
 
+        /// <inheritdoc/>
+        public List<string> ImagePaths { get; } = new();
+
+        private static HitCircle GetManiaHitObject(Position position, int timing) =>
+            new(new Vector2((int)position, 192), timing, 1, 0, new Extras(), false, 0);
+
         /// <summary>
         ///     Gets all Events of type hitObject.
         /// </summary>
         /// <returns> A collection of hitObjects. </returns>
         public IEnumerable<HitObject> GetManiaHitObjects() =>
-            this.SpawnObjects()?.SelectMany(@event => IntralismToManiaNote(@event, (int)TimeSpan.FromSeconds(@event.Time).TotalMilliseconds));
+            this.SpawnObjects().SelectMany(@event => IntralismToManiaNote(@event, (int)TimeSpan.FromSeconds(@event.Time).TotalMilliseconds));
 
         private static IEnumerable<HitCircle> IntralismToManiaNote(Event data, int timing)
         {
-            string rawData = data.GetTrimmedInnerData();
+            string rawData = data.GetInnerDataTrimmed();
             string[] notes = rawData.Split('-');
             IEnumerable<Position> positions = notes.Select(Enum.Parse<Position>);
 
             return positions.Select(position => GetManiaHitObject(position, timing));
         }
 
-        private static HitCircle GetManiaHitObject(Position position, int timing) =>
-            new (new Vector2((int)position, 192), timing, 1, 0, new Extras(), false, 0);
-
-        private IEnumerable<Event> SpawnObjects() =>
-            this.intralismBeatMap.Events?.Where(e => e.IsEventOfType(EventType.SpawnObj));
+        private IEnumerable<Event> SpawnObjects() => this.intralismBeatMap.Events.Where(e => e.IsEventOfType(EventType.SpawnObj));
     }
 }

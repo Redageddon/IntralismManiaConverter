@@ -9,8 +9,8 @@ namespace IntralismManiaConverter
     /// </summary>
     public static class AudioFileHelper
     {
-        private static Engine ffmpeg = new ();
-        private static string ffmpegPath;
+        private static Engine ffmpeg = new();
+        private static string ffmpegPath = string.Empty;
 
         /// <summary>
         ///     Gets or sets the path to the ffmeg installation, default is "ffmpeg.exe".
@@ -20,7 +20,7 @@ namespace IntralismManiaConverter
             get => ffmpegPath;
             set
             {
-                ffmpeg = new (value);
+                ffmpeg = new Engine(value);
                 ffmpegPath = value;
             }
         }
@@ -37,13 +37,12 @@ namespace IntralismManiaConverter
 
             if (Path.GetExtension(startPath) != ".ogg")
             {
-                await ffmpeg.ConvertAsync(
-                    new (startPath),
-                    new (endPath));
+                await ffmpeg.ConvertAsync(new MediaFile(startPath),
+                                          new MediaFile(endPath));
             }
             else
             {
-                File.Copy(startPath!, endPath!, true);
+                File.Copy(startPath, endPath, true);
             }
         }
     }

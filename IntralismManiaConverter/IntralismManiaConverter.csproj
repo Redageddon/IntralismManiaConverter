@@ -3,10 +3,11 @@
     <PropertyGroup>
         <OutputType>Library</OutputType>
         <TargetFramework>net5.0</TargetFramework>
+        <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Title>IntralismManiaConverter</Title>
         <Authors>Redageddon</Authors>
-        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Documentation.xml</DocumentationFile>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <RepositoryUrl>https://github.com/rubiksmaster02/IntralismManiaConverter</RepositoryUrl>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <NoWarn>SA1633, SA1129, SA1106, SA1107, SA1009, SA1200</NoWarn>
@@ -19,10 +20,6 @@
       <PackageReference Include="NAudio" Version="1.10.0" />
       <PackageReference Include="NAudio.Vorbis" Version="1.2.0" />
       <PackageReference Include="OsuParsers" Version="1.6.5" />
-      <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
       <PackageReference Include="xFFmpeg.NET" Version="3.4.0" />
     </ItemGroup>
 

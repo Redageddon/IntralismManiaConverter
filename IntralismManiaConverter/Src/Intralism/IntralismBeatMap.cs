@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -18,39 +19,15 @@ namespace IntralismManiaConverter.Intralism
         ///     Initializes a new instance of the <see cref="IntralismBeatMap"/> class.
         ///     An empty ctor allowing for serialization.
         /// </summary>
-        public IntralismBeatMap()
-        {
-        }
+        public IntralismBeatMap() {}
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="IntralismBeatMap"/> class.
         /// </summary>
-        /// <param name="path"> The path being loaded from. </param>
-        public IntralismBeatMap(string path)
-        {
-            IntralismBeatMap data = JsonSerializer.Deserialize<IntralismBeatMap>(File.ReadAllText(path!));
-            this.ConfigVersion = data.ConfigVersion;
-            this.Name = data.Name;
-            this.LevelResources = data.LevelResources;
-            this.HandCount = data.HandCount;
-            this.Speed = data.Speed;
-            this.Lives = data.Lives;
-            this.MaxLives = data.MaxLives;
-            this.MusicFile = data.MusicFile;
-            this.MusicTime = data.MusicTime;
-            this.IconFile = data.IconFile;
-            this.EnvironmentType = data.EnvironmentType;
-            this.Events = data.Events;
-            this.Path = path;
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="IntralismBeatMap"/> class.
-        /// </summary>
-        /// <param name="maniaBeatMap"> Creates a <see cref="IntralismBeatMap"/> from a <see cref="ManiaBeatMap"/>. </param>
+        /// <param name="maniaBeatMap">Creates a <see cref="IntralismBeatMap"/> from a <see cref="ManiaBeatMap"/>.</param>
         public IntralismBeatMap(ManiaBeatMap maniaBeatMap)
         {
-            this.Helper = new (maniaBeatMap);
+            this.Helper = new IntralismHelper(maniaBeatMap);
 
             this.Name = this.Helper.Name;
             this.Info = this.Helper.Info;
@@ -61,10 +38,10 @@ namespace IntralismManiaConverter.Intralism
         }
 
         /// <summary>
-        ///     Gets the intralism file helper class.
+        ///     Gets <see cref="IntralismHelper"/>.
         /// </summary>
         [JsonIgnore]
-        public IntralismHelper Helper { get; }
+        public IntralismHelper? Helper { get; }
 
         /// <summary>
         ///     Gets or sets the config version.
@@ -150,6 +127,26 @@ namespace IntralismManiaConverter.Intralism
 
         /// <inheritdoc/>
         public void SaveToFile(string outputPath) =>
-            File.WriteAllText(outputPath!, JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
+            File.WriteAllText(outputPath, JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
+
+        /// <summary>
+        ///     Reads json data an deserializes it into an <see cref="IntralismBeatMap"/>.
+        /// </summary>
+        /// <param name="path">The json file path.</param>
+        /// <returns>A <see cref="IntralismBeatMap"/>.</returns>
+        /// <exception cref="NoNullAllowedException">When deserialization returns null.</exception>
+        public static IntralismBeatMap ReadFromJsonFile(string path)
+        {
+            string jsonData = File.ReadAllText(path);
+
+            IntralismBeatMap? intralismBeatMap = JsonSerializer.Deserialize<IntralismBeatMap>(jsonData);
+
+            if (intralismBeatMap is null)
+            {
+                throw new NoNullAllowedException($"{nameof(intralismBeatMap)} should not be null. Something went wrong.");
+            }
+
+            return intralismBeatMap;
+        }
     }
 }

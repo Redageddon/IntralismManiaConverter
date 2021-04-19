@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.Json.Serialization;
+using IntralismManiaConverter.Interface;
 
 namespace IntralismManiaConverter.Intralism
 {
@@ -7,15 +8,13 @@ namespace IntralismManiaConverter.Intralism
     ///     An intralism level resource.
     /// </summary>
     [Serializable]
-    public class LevelResource
+    public class LevelResource : ILocatable
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="LevelResource"/> class.
         ///     An empty ctor allowing for serialization.
         /// </summary>
-        public LevelResource()
-        {
-        }
+        public LevelResource() {}
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="LevelResource"/> class.
@@ -32,18 +31,18 @@ namespace IntralismManiaConverter.Intralism
         ///     Gets or sets the name of the resource.
         /// </summary>
         [JsonPropertyName("name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         ///     Gets or sets the type of the resource.
         /// </summary>
         [JsonPropertyName("type")]
-        public string Type { get; set; }
+        public string Type { get; set; } = string.Empty;
 
         /// <summary>
         ///     Gets or sets the path to the resource.
         /// </summary>
         [JsonPropertyName("path")]
-        public string Path { get; set; }
+        public string Path { get; set; } = string.Empty;
     }
 }

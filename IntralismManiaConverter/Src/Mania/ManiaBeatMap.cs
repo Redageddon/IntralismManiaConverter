@@ -17,7 +17,7 @@ namespace IntralismManiaConverter.Mania
     public class ManiaBeatMap : Beatmap, ISavable, ILocatable
     {
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ManiaBeatMap" /> class.
+        ///     Initializes a new instance of the <see cref="ManiaBeatMap"/> class.
         ///     An empty ctor allowing for serialization.
         /// </summary>
         public ManiaBeatMap()
@@ -68,7 +68,7 @@ namespace IntralismManiaConverter.Mania
 
             this.TimingPoints = new List<TimingPoint>
             {
-                new ()
+                new()
                 {
                     Offset = 0,
                     BeatLength = 500,
@@ -83,28 +83,9 @@ namespace IntralismManiaConverter.Mania
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ManiaBeatMap" /> class.
+        ///     Initializes a new instance of the <see cref="ManiaBeatMap"/> class.
         /// </summary>
-        /// <param name="path"> The path being loaded from. </param>
-        public ManiaBeatMap(string path)
-        {
-            Beatmap data = BeatmapDecoder.Decode(path);
-
-            this.Version = data.Version;
-            this.GeneralSection = data.GeneralSection;
-            this.EditorSection = data.EditorSection;
-            this.MetadataSection = data.MetadataSection;
-            this.DifficultySection = data.DifficultySection;
-            this.EventsSection = data.EventsSection;
-            this.TimingPoints = data.TimingPoints;
-            this.HitObjects = data.HitObjects;
-            this.Path = path;
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ManiaBeatMap" /> class.
-        /// </summary>
-        /// <param name="intralismBeatMap"> Creates a <see cref="ManiaBeatMap" /> from an <see cref="IntralismBeatMap" />. </param>
+        /// <param name="intralismBeatMap"> Creates a <see cref="ManiaBeatMap"/> from an <see cref="IntralismBeatMap"/>. </param>
         public ManiaBeatMap(IntralismBeatMap intralismBeatMap)
             : this()
         {
@@ -124,12 +105,24 @@ namespace IntralismManiaConverter.Mania
         /// <summary>
         ///     Gets the helper class for mania.
         /// </summary>
-        public ManiaHelper Helper { get; }
+        public ManiaHelper? Helper { get; }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public string Path { get; set; } = string.Empty;
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void SaveToFile(string outputPath) => this.Write(outputPath);
+
+        /// <summary>
+        ///     Reads osu data an deserializes it into an <see cref="ManiaBeatMap"/>.
+        /// </summary>
+        /// <param name="path">The osu file path.</param>
+        /// <returns>A <see cref="ManiaBeatMap"/>.</returns>
+        public static ManiaBeatMap ReadFromOsuFile(string path)
+        {
+            Beatmap beatmap = BeatmapDecoder.Decode(path);
+
+            return (ManiaBeatMap)beatmap;
+        }
     }
 }

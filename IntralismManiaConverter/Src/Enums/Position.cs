@@ -1,7 +1,7 @@
-﻿namespace IntralismManiaConverter.Enums
-{
-    using System;
+﻿using System;
 
+namespace IntralismManiaConverter.Enums
+{
     /// <summary>
     ///     The enum that represents mania to intralism note conversions.
     /// </summary>
